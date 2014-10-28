@@ -1,0 +1,26 @@
+/* Application wide non-native CSS rules */
+
+/*
+ * http://docs.angularjs.org/api/ng/directive/ngShow#usage_animations
+ */
+
+
+body {background: white;}
+
+
+.item.active, .item.activated, .item-complex.active .item-content, .item-complex.activated .item-content, .item .item-content.active, .item .item-content.activated {
+	border-color: #ccc;
+	background-color: #D9D9D9;
+}
+
+a.item-icon-right:after, button.item-icon-right:after, a.item-button-right:after, button.item-button-right:after, .item a.item-content:after {
+	display: none !important;
+}
+
+.show-car img {width:100%; height:auto; display:block;}
+.show-car label {border: none;}
+.show-car input[type="text"] {border: 1px solid #ccc;}
+.show-car .actions,
+.show-car .status {margin-top: 20px; text-align: center}
+.show-car .row > div {width: 100%;}
+.show-car .actions .item {margin-bottom: 10px; text-align: center;}

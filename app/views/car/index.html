@@ -1,0 +1,17 @@
+
+
+
+<ion-list ng-controller="IndexCtrl">
+	<div ng-repeat="car in cars" ng-click="open(car.id)">
+		<ion-item class="item-stable item-thumbnail-left item-icon-right"
+			ng-click="toggleCar(car)"
+			ng-class="{active: isCarShown(car)}">
+
+			<img ng-src="/images/sample.jpg">	          
+			<h2>{{car.name}}</h2> 
+			<p>Plaque</p>
+			<i class="icon ion-ios7-arrow-right"></i>
+
+		</ion-item>
+	</div>
+</ion-list>

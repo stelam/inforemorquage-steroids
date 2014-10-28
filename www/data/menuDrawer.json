@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "Vos voitures",
+    "viewId": "http://localhost/views/car/index.html/",
+    "viewLocation": "http://localhost/views/car/index.html/"
+  },
+  {
+    "id": 2,
+    "name": "Ajouter un véhicule",
+    "viewId": "newCar",
+    "viewLocation": "http://localhost/views/car/new.html/"
+  },
+  {
+    "id": 3,
+    "name": "Configuration",
+    "viewId": "configuration",
+    "viewLocation": "views/config/index.html"
+  }
+]

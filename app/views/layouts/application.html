@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf8">
+  <title>Inforemorquage</title>
+
+  <link rel="stylesheet" href="/vendor/ionic/css/ionic.css" />
+  <link rel="stylesheet" href="/stylesheets/application.css" />
+
+
+  <script src="/vendor/ionic/js/ionic.bundle.min.js"></script>
+
+  <script src="/components/angular/angular.js"></script>
+  <script src="/components/ngCordova/dist/ng-cordova.min.js"></script>
+
+  <script src="/components/angular-touch/angular-touch.min.js"></script>
+  <script src="/components/angular-route/angular-route.min.js"></script>
+
+  <script src="http://localhost/cordova.js"></script>
+  <script src="/components/steroids-js/steroids.js"></script>
+
+  <script src="/components/lodash/dist/lodash.min.js"></script>
+  <script src="/components/restangular/dist/restangular.min.js"></script>
+
+  <script src="/models/<%= yield.controller %>.js"></script>
+
+  <script src="/controllers/steroidsBridge.js"></script>
+  <script src="/controllers/mainApp.js"></script>
+  
+  <script src="/controllers/<%= yield.controller %>.js"></script>
+
+
+
+  <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+</head>
+<body class="content" ng-app="<%= yield.controller %>App">
+
+  <%= yield.view %>
+
+</body>
+</html>

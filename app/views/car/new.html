@@ -1,0 +1,40 @@
+<div ng-controller="ShowCtrl as carShowCtrl" class="padding show-car">
+	<div class="row">
+		<div class="col">
+			<img ng-src="/images/sample.jpg" />		
+		</div>
+
+		<div class="col" ng-include="_form.html">
+		
+		</div>
+	</div>
+
+	<div class="row status">
+		<div class="card">
+		  <div class="item item-text-wrap">
+		    État : Non remorqué
+		  </div>
+		</div>
+
+	</div>
+
+
+	<div class="row actions">
+		<div class="list">
+
+		  <ion-item class="item item-icon-right" href="#" ng-click="alert('f');">
+		    <i class="icon ion-checkmark-circled"></i>
+		    Sauvegarder
+		  </ion-item>
+
+		  <a class="item item-icon-right" href="#" ng-click="requestDelete()">
+		    <i class="icon ion-trash-a"></i>
+		    Supprimer
+		  </a>
+
+
+		</div>
+
+	</div>
+	
+</div>
