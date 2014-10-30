@@ -15,13 +15,6 @@ carApp.config(function ($routeProvider, $locationProvider) {
 })
 
 
-// main scope controller
-carApp.controller('carCtrl', ['UIInitializer', '$scope', '$filter', 'CarRestangular', 'ViewManager', '$cordovaDialogs', function (UIInitializer, $scope, $filter, CarRestangular, ViewManager, $cordovaDialogs) {
-
-
-}]);
-
-
 
 // Index: http://localhost/views/car/index.html
 carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarRestangular', 'ViewManager', 'drawerOpenPageService', function (UIInitializer, $scope, CarRestangular, ViewManager, drawerOpenPageService) {
@@ -40,20 +33,6 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarRestangular', 'Vi
   // Fetch all objects from the local JSON (see app/models/car.js)
   CarRestangular.all('car').getList().then( function(cars) {
     $scope.cars = cars;
-
-    // Preload show car view
-    webView = new steroids.views.WebView({
-      location: "views/car/show.html/",
-      id: "showCar"
-    });  
-    webView.preload();
-
-    // Preload new car view
-    webView = new steroids.views.WebView({
-      location: "views/car/new.html/",
-      id: "newCar"
-    });  
-    webView.preload();
 
   });
 
