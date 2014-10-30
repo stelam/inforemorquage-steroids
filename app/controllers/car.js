@@ -1,4 +1,4 @@
-var carApp = angular.module('carApp', ['CarModel', 'LocalStorageModule', 'ngTouch', 'mainApp', 'steroidsBridge', 'ionic', 'ngRoute', 'ngCordova']);
+var carApp = angular.module('carApp', ['CarModelApp', 'LocalStorageModule', 'ngTouch', 'mainApp', 'steroidsBridge', 'ionic', 'ngRoute', 'ngCordova']);
 
 var eventHandler = steroids.layers.on('willchange', function(event) {
     alert("eventName: " + event.name + "\n"
@@ -17,27 +17,7 @@ carApp.config(function ($routeProvider, $locationProvider) {
 
 
 // Index: http://localhost/views/car/index.html
-carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'localStorageService', 'CarRestangular', 'ViewManager', 'drawerOpenPageService', function (UIInitializer, $scope, localStorageService, CarRestangular, ViewManager, drawerOpenPageService) {
-
-  var initData = function() {
-    var data = [
-      {
-        "id": 1,
-        "name": "First car",
-        "registration": "H1Z2Z1",
-        "imageURL" : "/images/sample.jpg"
-      },
-      {
-        "id": 2,
-        "name": "Second car",
-        "registration": "H1Z2Z1",
-        "imageURL" : "/images/samasdple.jpg"
-      }
-    ];
-    console.log(data);
-    return localStorageService.set("cars", data);
-  }
-  initData();
+carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarModel', 'CarRestangular', 'ViewManager', 'drawerOpenPageService', function (UIInitializer, $scope, CarModel, CarRestangular, ViewManager, drawerOpenPageService) {
 
 
   // Helper function for opening new webviews
@@ -49,8 +29,8 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'localStorageService'
     });
   };
 
-  // Load cars
-  $scope.cars = localStorageService.get("cars");
+  // Load some cars
+  $scope.cars = CarModel.initData();
 
 
   // Native navigation
@@ -62,29 +42,22 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'localStorageService'
 
 
 // Show: http://localhost/views/car/show.html?id=<id>
-carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'localStorageService', '$filter', 'CarRestangular', 'ViewManager', '$route', '$routeParams', '$location', '$cordovaDialogs', '$cordovaToast', 'CameraManager', function (UIInitializer, $scope, localStorageService, $filter, CarRestangular, ViewManager, $route, $routeParams, $location, $cordovaDialogs, $cordovaToast, CameraManager) {
+carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter', 'CarRestangular', 'ViewManager', '$route', '$routeParams', '$location', '$cordovaDialogs', '$cordovaToast', 'CameraManager', function (UIInitializer, $scope, CarModel, localStorageService, $filter, CarRestangular, ViewManager, $route, $routeParams, $location, $cordovaDialogs, $cordovaToast, CameraManager) {
   
 
   // empty the car ojbect
-  $scope.car = {imageURL : "/images/sample.jpg"};
+  // $scope.car = {imageURL : "/images/sample.jpg"};
 
   // A new car has been requested
   this.messageReceived = function(event) {
     if (event.data.recipient == "ShowCtrl"){
-      // Fetch all objects from the local JSON (see app/models/car.js)
-      cars = localStorageService.get("cars");
+      $scope.car = CarModel.getById(event.data.carId);
 
-      cars.forEach(function(c) {
-        if (c.id == event.data.carId){
-          $scope.car = c;
+      // set navigation bar
+      UIInitializer.initNavigationBar($scope.car.name);
+      UIInitializer.initNavigationMenuButton();
 
-          // set navigation bar
-          UIInitializer.initNavigationBar($scope.car.name);
-          UIInitializer.initNavigationMenuButton();
-
-          $scope.$apply();
-        }
-      });
+      $scope.$apply();
 
     } 
   }
@@ -149,9 +122,9 @@ carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'localStorageService',
 
 
 
-carApp.controller('NewCtrl', ['UIInitializer', '$scope', '$filter', 'CarRestangular', 'ViewManager', '$cordovaDialogs', function (UIInitializer, $scope, $filter, CarRestangular, ViewManager, $cordovaDialogs) {
+carApp.controller('NewCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter', 'CarRestangular', 'ViewManager', '$cordovaDialogs', function (UIInitializer, $scope, CarModel, $filter, CarRestangular, ViewManager, $cordovaDialogs) {
   // empty the car ojbect
-  $scope.car = {imageURL : "/images/sample.jpg"};
+  $scope.car = CarModel.defaultCar();
 
   this.messageReceived = function(event) {
     
