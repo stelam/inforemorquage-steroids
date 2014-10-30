@@ -1,19 +1,49 @@
+/*
+* Difficile d'implémenter l'état actif des items du menu
+* parce que la gestion des événements UI n'est pas encore
+* disponible pour Android sous Appgyver :
+* https://github.com/AppGyver/steroids/issues/182
+*
+*/
+
+
 var menuDrawerApp = angular.module('menuDrawerApp', ['MenuDrawerModel', 'ngTouch', 'mainApp', 'steroidsBridge']);
 
 
-// Index: http://localhost/views/menuDrawer/index.html
 
+// main scope controller
+menuDrawerApp.controller('menuDrawerCtrl', ['UIInitializer', '$scope', 'MenuDrawerRestangular', 'ViewManager', function (UIInitializer, $scope, MenuDrawerRestangular, ViewManager) {
+
+
+}]);
+
+
+
+// Index: http://localhost/views/menuDrawer/index.html
 menuDrawerApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'MenuDrawerRestangular', 'ViewManager', function (UIInitializer, $scope, MenuDrawerRestangular, ViewManager) {
 
   // Helper function for opening new webviews
   $scope.open = function(viewLocation, viewId) {
-    //ViewManager.goToLoadedView(viewLocation, viewId);
-    centerView = new steroids.views.WebView({
-      location: viewLocation,
-      id: viewId
-    });  
+
     steroids.drawers.hide({
-      center: centerView
+      
+    }, {
+      onSuccess: function(){
+        if (viewId == "dashboard"){
+          window.postMessage({
+            action: "popAll",
+            viewLocation: viewLocation,
+            viewId: viewId
+          });
+        }
+        else {
+          window.postMessage({
+            action: "openFromDrawer",
+            viewLocation: viewLocation,
+            viewId: viewId
+          });
+        }
+      }
     });
   };
 
@@ -24,6 +54,7 @@ menuDrawerApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'MenuDrawerRes
 
   // Native navigation
   UIInitializer.initNavigationBar('Menu');
+
 
 }]);
 
@@ -43,3 +74,5 @@ menuDrawerApp.controller('ShowCtrl', function ($scope, $filter, MenuDrawerRestan
   steroids.view.setBackgroundColor("#FFFFFF");
 
 });
+
+

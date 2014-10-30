@@ -1,12 +1,6 @@
 <div ng-controller="ShowCtrl as carShowCtrl" class="padding show-car">
-	<div class="row">
-		<div class="col">
-			<img ng-src="/images/sample.jpg" />		
-		</div>
+	<div class="row" ng-include="'/views/car/_form.html'">
 
-		<div class="col" ng-include="/views/car/_form.html">
-		
-		</div>
 	</div>
 
 	<div class="row status">
@@ -22,7 +16,7 @@
 	<div class="row actions">
 		<div class="list">
 
-		  <ion-item class="item item-icon-right" href="#" ng-click="alert('f');">
+		  <ion-item class="item item-icon-right" href="#" ng-click="requestSave()">
 		    <i class="icon ion-checkmark-circled"></i>
 		    Sauvegarder
 		  </ion-item>

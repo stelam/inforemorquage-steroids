@@ -1,5 +1,10 @@
 var carApp = angular.module('carApp', ['CarModel', 'ngTouch', 'mainApp', 'steroidsBridge', 'ionic', 'ngRoute', 'ngCordova']);
 
+var eventHandler = steroids.layers.on('willchange', function(event) {
+    alert("eventName: " + event.name + "\n"
+        + " target.webview.location: " + event.target.webview.location + "\n"
+        + " source.webview.location: " + event.source.webview.location)
+})
 
 carApp.config(function ($routeProvider, $locationProvider) {
   $routeProvider
@@ -10,15 +15,26 @@ carApp.config(function ($routeProvider, $locationProvider) {
 })
 
 
-// Index: http://localhost/views/car/index.html
-carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarRestangular', 'ViewManager', function (UIInitializer, $scope, CarRestangular, ViewManager) {
+// main scope controller
+carApp.controller('carCtrl', ['UIInitializer', '$scope', '$filter', 'CarRestangular', 'ViewManager', '$cordovaDialogs', function (UIInitializer, $scope, $filter, CarRestangular, ViewManager, $cordovaDialogs) {
 
-  console.log(steroids.view)
+
+}]);
+
+
+
+// Index: http://localhost/views/car/index.html
+carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarRestangular', 'ViewManager', 'drawerOpenPageService', function (UIInitializer, $scope, CarRestangular, ViewManager, drawerOpenPageService) {
+
+
 
   // Helper function for opening new webviews
-  $scope.open = function(id) {
+  $scope.open = function(carId) {
     ViewManager.goToLoadedView("views/car/show.html/", "showCar");
-    window.postMessage({carId: id});
+    window.postMessage({
+      recipient: "ShowCtrl",
+      carId: carId
+    });
   };
 
   // Fetch all objects from the local JSON (see app/models/car.js)
@@ -51,27 +67,31 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarRestangular', 'Vi
 
 
 // Show: http://localhost/views/car/show.html?id=<id>
-carApp.controller('ShowCtrl', ['$scope', '$filter', 'CarRestangular', 'ViewManager', '$route', '$routeParams', '$location', '$cordovaDialogs', function ($scope, $filter, CarRestangular, ViewManager, $route, $routeParams, $location, $cordovaDialogs) {
+carApp.controller('ShowCtrl', ['UIInitializer', '$scope', '$filter', 'CarRestangular', 'ViewManager', '$route', '$routeParams', '$location', '$cordovaDialogs', '$cordovaToast', 'CameraManager', function (UIInitializer, $scope, $filter, CarRestangular, ViewManager, $route, $routeParams, $location, $cordovaDialogs, $cordovaToast, CameraManager) {
   
 
   // empty the car ojbect
-  $scope.car = {}
+  $scope.car = {imageURL : "/images/sample.jpg"};
 
   // A new car has been requested
   this.messageReceived = function(event) {
+    if (event.data.recipient == "ShowCtrl"){
+      // Fetch all objects from the local JSON (see app/models/car.js)
+      CarRestangular.all('car').getList().then( function(cars) {
+        // Then select the one based on the view's id query parameter
+        $scope.car = $filter('filter')(cars, {id: event.data.carId})[0];
 
-    // Fetch all objects from the local JSON (see app/models/car.js)
-    CarRestangular.all('car').getList().then( function(cars) {
-      // Then select the one based on the view's id query parameter
-      $scope.car = $filter('filter')(cars, {id: event.data.carId})[0];
-
-      // set navigation bar title
-      steroids.view.navigationBar.show($scope.car.name);
-    });
+        // set navigation bar title
+        UIInitializer.initNavigationBar($scope.car.name);
+        UIInitializer.initNavigationMenuButton();
+      });
+    } 
 
   }
 
   window.addEventListener("message", this.messageReceived);
+
+  
 
 
   // L'utilisateur a demandé la suppression d'un véhicule
@@ -91,6 +111,36 @@ carApp.controller('ShowCtrl', ['$scope', '$filter', 'CarRestangular', 'ViewManag
   $scope.delete = function(){
     // ViewManager.goHome();
     steroids.layers.pop();
+
+   $cordovaToast.showShortTop('Véhicule supprimé').then(function(success) {
+      // success
+    }, function (error) {
+      // error
+    });
+  }
+
+
+
+  $scope.requestSave = function(){
+   $cordovaToast.showShortTop('Véhicule enregistré').then(function(success) {
+      // success
+    }, function (error) {
+      // error
+    });
+  }
+
+
+  $scope.requestCamera = function(){
+    CameraManager.takePicture($scope.imageReceived);
+  }
+
+  $scope.requestFileBrowser = function(){
+    CameraManager.browsePicture($scope.imageReceived); 
+  }
+
+  $scope.imageReceived = function(imageURL){
+    $scope.car.imageURL = imageURL;
+    $scope.$apply();
   }
 
 
@@ -98,4 +148,26 @@ carApp.controller('ShowCtrl', ['$scope', '$filter', 'CarRestangular', 'ViewManag
 
 
 
+
+carApp.controller('NewCtrl', ['UIInitializer', '$scope', '$filter', 'CarRestangular', 'ViewManager', '$cordovaDialogs', function (UIInitializer, $scope, $filter, CarRestangular, ViewManager, $cordovaDialogs) {
+  // empty the car ojbect
+  $scope.car = {imageURL : "/images/sample.jpg"};
+
+  this.messageReceived = function(event) {
+    
+    if (event.data.action == "openFromDrawer" && event.data.viewId == "newCar"){
+      UIInitializer.initNavigationBar('Nouveau véhicule');
+      UIInitializer.initNavigationMenuButton();
+    }
+  }
+  window.addEventListener("message", this.messageReceived);
+
+
+  $scope.open = function(id) {
+    steroids.layers.pop(); 
+  };
+
+  // Native navigation
+  
+}]);
 

@@ -1,8 +1,10 @@
 <div ng-controller="IndexCtrl">
   <ul class="list">
     <li class="item item-icon-right" ng-click="open(menuDrawer.viewLocation, menuDrawer.viewId)" ng-repeat="menuDrawer in menuDrawers">
-      {{ menuDrawer.name }}
-      <i class="icon ion-ios7-arrow-right"></i>
+    	<div ng-show="currentCenterViewId != menuDrawer.viewId">
+			{{ menuDrawer.name }}
+			<i class="icon ion-ios7-arrow-right"></i>
+		</div>
     </li>
   </ul>
 </div>

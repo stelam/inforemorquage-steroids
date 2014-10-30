@@ -1,17 +1,20 @@
 
-angular.module('mainApp', ['ngTouch'])
-  .controller('MainAppController', function(currencyConverter) {
-    this.qty = 1;
-    this.cost = 2;
-    this.inCurr = 'EUR';
-    this.currencies = currencyConverter.currencies;
+angular.module('mainApp', ['ngTouch', 'steroidsBridge'])
+  .controller('MainAppController', function($scope) {
 
-    this.total = function total(outCurr) {
-      return currencyConverter.convert(this.qty * this.cost, this.inCurr, outCurr);
-    };
-    this.pay = function pay() {
-      window.alert("Thanks!");
-    };
+  })
 
 
-  });
+  .service("drawerOpenPageService", function(ViewManager){
+    this.messageReceived = function(event) {
+      if (event.data.action == "openFromDrawer"){
+        //steroids.layers.popAll();
+        ViewManager.goToLoadedView(event.data.viewLocation, event.data.viewId);
+      }
+      else if (event.data.action == "popAll"){
+        steroids.layers.popAll();
+      }
+    }
+
+    window.addEventListener("message", this.messageReceived);
+  })

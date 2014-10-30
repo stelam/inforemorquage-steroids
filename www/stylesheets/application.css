@@ -24,3 +24,18 @@ a.item-icon-right:after, button.item-icon-right:after, a.item-button-right:after
 .show-car .status {margin-top: 20px; text-align: center}
 .show-car .row > div {width: 100%;}
 .show-car .actions .item {margin-bottom: 10px; text-align: center;}
+
+
+
+.col-image > div {position: relative; }
+.col-image button {
+	opacity: 0.9;
+	position: absolute;
+	bottom: 0px;
+	width: 50%;
+	left: 0px;
+}
+.col-image button:last-child{
+	left: auto;
+	right: 0px;
+}
