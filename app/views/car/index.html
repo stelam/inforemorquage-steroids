@@ -7,7 +7,7 @@
 			ng-click="toggleCar(car)"
 			ng-class="{active: isCarShown(car)}">
 
-			<img ng-src="/images/sample.jpg">	          
+			<img ng-src="{{car.imageURL}}">	          
 			<h2>{{car.name}}</h2> 
 			<p>Plaque</p>
 			<i class="icon ion-ios7-arrow-right"></i>

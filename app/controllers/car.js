@@ -1,4 +1,4 @@
-var carApp = angular.module('carApp', ['CarModel', 'ngTouch', 'mainApp', 'steroidsBridge', 'ionic', 'ngRoute', 'ngCordova']);
+var carApp = angular.module('carApp', ['CarModel', 'LocalStorageModule', 'ngTouch', 'mainApp', 'steroidsBridge', 'ionic', 'ngRoute', 'ngCordova']);
 
 var eventHandler = steroids.layers.on('willchange', function(event) {
     alert("eventName: " + event.name + "\n"
@@ -17,8 +17,27 @@ carApp.config(function ($routeProvider, $locationProvider) {
 
 
 // Index: http://localhost/views/car/index.html
-carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarRestangular', 'ViewManager', 'drawerOpenPageService', function (UIInitializer, $scope, CarRestangular, ViewManager, drawerOpenPageService) {
+carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'localStorageService', 'CarRestangular', 'ViewManager', 'drawerOpenPageService', function (UIInitializer, $scope, localStorageService, CarRestangular, ViewManager, drawerOpenPageService) {
 
+  var initData = function() {
+    var data = [
+      {
+        "id": 1,
+        "name": "First car",
+        "registration": "H1Z2Z1",
+        "imageURL" : "/images/sample.jpg"
+      },
+      {
+        "id": 2,
+        "name": "Second car",
+        "registration": "H1Z2Z1",
+        "imageURL" : "/images/samasdple.jpg"
+      }
+    ];
+    console.log(data);
+    return localStorageService.set("cars", data);
+  }
+  initData();
 
 
   // Helper function for opening new webviews
@@ -30,11 +49,8 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarRestangular', 'Vi
     });
   };
 
-  // Fetch all objects from the local JSON (see app/models/car.js)
-  CarRestangular.all('car').getList().then( function(cars) {
-    $scope.cars = cars;
-
-  });
+  // Load cars
+  $scope.cars = localStorageService.get("cars");
 
 
   // Native navigation
@@ -46,7 +62,7 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarRestangular', 'Vi
 
 
 // Show: http://localhost/views/car/show.html?id=<id>
-carApp.controller('ShowCtrl', ['UIInitializer', '$scope', '$filter', 'CarRestangular', 'ViewManager', '$route', '$routeParams', '$location', '$cordovaDialogs', '$cordovaToast', 'CameraManager', function (UIInitializer, $scope, $filter, CarRestangular, ViewManager, $route, $routeParams, $location, $cordovaDialogs, $cordovaToast, CameraManager) {
+carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'localStorageService', '$filter', 'CarRestangular', 'ViewManager', '$route', '$routeParams', '$location', '$cordovaDialogs', '$cordovaToast', 'CameraManager', function (UIInitializer, $scope, localStorageService, $filter, CarRestangular, ViewManager, $route, $routeParams, $location, $cordovaDialogs, $cordovaToast, CameraManager) {
   
 
   // empty the car ojbect
@@ -56,16 +72,21 @@ carApp.controller('ShowCtrl', ['UIInitializer', '$scope', '$filter', 'CarRestang
   this.messageReceived = function(event) {
     if (event.data.recipient == "ShowCtrl"){
       // Fetch all objects from the local JSON (see app/models/car.js)
-      CarRestangular.all('car').getList().then( function(cars) {
-        // Then select the one based on the view's id query parameter
-        $scope.car = $filter('filter')(cars, {id: event.data.carId})[0];
+      cars = localStorageService.get("cars");
 
-        // set navigation bar title
-        UIInitializer.initNavigationBar($scope.car.name);
-        UIInitializer.initNavigationMenuButton();
+      cars.forEach(function(c) {
+        if (c.id == event.data.carId){
+          $scope.car = c;
+
+          // set navigation bar
+          UIInitializer.initNavigationBar($scope.car.name);
+          UIInitializer.initNavigationMenuButton();
+
+          $scope.$apply();
+        }
       });
-    } 
 
+    } 
   }
 
   window.addEventListener("message", this.messageReceived);
