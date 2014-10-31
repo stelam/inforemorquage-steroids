@@ -22,20 +22,13 @@ steroids.config.location = "http://localhost/views/car/index.html"
 # ]
 
 # ## Preloads
-steroids.config.preloads = [
-  {
-    id: "showCar"
-    location: "http://localhost/views/car/show.html/"
-  },
-  {
-    id: "newCar"
-    location: "http://localhost/views/car/new.html/"
-  },
-  {
-    id: "configuration"
-    location: "http://localhost/views/configuration/index.html/"
-  },
-]
+# steroids.config.preloads = [
+#   {
+#     id: "google"
+#     location: "http://www.google.com"
+#   }
+# ]
+
 
 # ## Drawers
 steroids.config.drawers =

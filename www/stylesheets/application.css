@@ -13,6 +13,12 @@ body {background: white;}
 	background-color: #D9D9D9;
 }
 
+.ionic .button.activated {
+	border-color: #a2a2a2;
+	background-color: #e5e5e5;
+	box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.15);
+}
+
 a.item-icon-right:after, button.item-icon-right:after, a.item-button-right:after, button.item-button-right:after, .item a.item-content:after {
 	display: none !important;
 }
@@ -23,7 +29,8 @@ a.item-icon-right:after, button.item-icon-right:after, a.item-button-right:after
 .show-car .actions,
 .show-car .status {margin-top: 20px; text-align: center}
 .show-car .row > div {width: 100%;}
-.show-car .actions .item {margin-bottom: 10px; text-align: center;}
+.show-car .actions .item,
+.show-car .actions button {margin-bottom: 10px; text-align: center; display: block; width: 100%;}
 
 
 
@@ -38,4 +45,13 @@ a.item-icon-right:after, button.item-icon-right:after, a.item-button-right:after
 .col-image button:last-child{
 	left: auto;
 	right: 0px;
+}
+
+
+input.ng-invalid.ng-dirty {
+	background-color: #FA787E;
+}
+
+input.ng-valid.ng-dirty {
+	background-color: #78FA89;
 }

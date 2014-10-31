@@ -1,10 +1,5 @@
 var carApp = angular.module('carApp', ['CarModelApp', 'LocalStorageModule', 'ngTouch', 'mainApp', 'steroidsBridge', 'ionic', 'ngRoute', 'ngCordova']);
 
-var eventHandler = steroids.layers.on('willchange', function(event) {
-    alert("eventName: " + event.name + "\n"
-        + " target.webview.location: " + event.target.webview.location + "\n"
-        + " source.webview.location: " + event.source.webview.location)
-})
 
 carApp.config(function ($routeProvider, $locationProvider) {
   $routeProvider
@@ -22,27 +17,76 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarModel', 'CarResta
 
   // Helper function for opening new webviews
   $scope.open = function(carId) {
-    ViewManager.goToLoadedView("views/car/show.html/", "showCar");
+    ViewManager.goToLoadedView("http://localhost/views/car/show.html/", "showCar");
     window.postMessage({
       recipient: "ShowCtrl",
       carId: carId
     });
   };
 
+
+
   // Load some cars
   $scope.cars = CarModel.initData();
 
 
-  // Native navigation
-  UIInitializer.initNavigationBar('Vos voitures');
-  UIInitializer.initNavigationMenuButton();
+
+  this.messageReceived = function(event) {
+    if (event.data.action == "refreshCars"){
+      $scope.cars = CarModel.getAll();
+      console.log($scope.cars);
+      $scope.$apply();
+      
+    }
+  }
+  window.addEventListener("message", this.messageReceived);
+
+  
+  steroids.on('ready', function() {
+    // Native navigation
+    UIInitializer.initNavigationBar('Vos voitures');
+    UIInitializer.initNavigationMenuButton();
+
+    // Preload show car view
+    webView = new steroids.views.WebView({
+      location: "http://localhost/views/car/show.html/",
+      id: "showCar"
+    });  
+    webView.preload();
+
+    // Preload new car view
+    webView = new steroids.views.WebView({
+      location: "http://localhost/views/car/new.html/",
+      id: "newCar"
+    });  
+    webView.preload();
+
+    // Preload configuration view
+    webView = new steroids.views.WebView({
+      location: "http://localhost/views/configuration/index.html/",
+      id: "configuration"
+    });  
+    webView.preload();
+
+
+    console.log(steroids.getApplicationState({},{
+      onSuccess: function(){
+        console.log("success");
+      },
+      onFailure : function(){
+        console.log("fail");
+      }
+    }));
+
+  });
+
 }]);
 
 
 
 
 // Show: http://localhost/views/car/show.html?id=<id>
-carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter', 'CarRestangular', 'ViewManager', '$route', '$routeParams', '$location', '$cordovaDialogs', '$cordovaToast', 'CameraManager', function (UIInitializer, $scope, CarModel, localStorageService, $filter, CarRestangular, ViewManager, $route, $routeParams, $location, $cordovaDialogs, $cordovaToast, CameraManager) {
+carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter', 'CarRestangular', 'ViewManager', '$route', '$routeParams', '$location', '$cordovaDialogs', '$cordovaToast', 'CameraManager', function (UIInitializer, $scope, CarModel, $filter, CarRestangular, ViewManager, $route, $routeParams, $location, $cordovaDialogs, $cordovaToast, CameraManager) {
   
 
   // empty the car ojbect
@@ -95,11 +139,7 @@ carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter',
 
 
   $scope.requestSave = function(){
-   $cordovaToast.showShortTop('Véhicule enregistré').then(function(success) {
-      // success
-    }, function (error) {
-      // error
-    });
+    CarModel.save($scope.car, $scope.onCarSaveSuccess, $scope.onCarSaveFail);
   }
 
 
@@ -115,6 +155,30 @@ carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter',
     $scope.car.imageURL = imageURL;
     $scope.$apply();
   }
+
+
+  $scope.onCarSaveSuccess = function(){
+    $cordovaToast.showShortTop('Véhicule enregistré').then(function(success) {
+      // success
+      window.postMessage({
+        action: "refreshCars"
+      });
+
+    }, function (error) {
+      // error
+    });
+  }
+
+  $scope.onCarSaveFail = function(error){
+    $cordovaToast.showShortTop('Erreur d\'enregistrement').then(function(success) {
+      // success
+    }, function (error) {
+      // error
+    });
+  }
+
+
+  
 
 
 }]);

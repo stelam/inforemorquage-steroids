@@ -17,8 +17,11 @@ configurationApp.controller('IndexCtrl', ['$scope', 'ConfigurationRestangular', 
   });
 
   // Native navigation
-  UIInitializer.initNavigationBar('Configuration');
-  UIInitializer.initNavigationMenuButton();
+  steroids.on('ready', function() {
+    UIInitializer.initNavigationBar('Configuration');
+    UIInitializer.initNavigationMenuButton();
+  });
+
 
 }]);
 
@@ -32,9 +35,5 @@ configurationApp.controller('ShowCtrl', function ($scope, $filter, Configuration
     // Then select the one based on the view's id query parameter
     $scope.configuration = $filter('filter')(configurations, {id: steroids.view.params['id']})[0];
   });
-
-  // Native navigation
-  UIInitializer.initNavigationBar('Configuration');
-  UIInitializer.initNavigationMenuButton();
 
 });

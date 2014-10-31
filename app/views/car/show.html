@@ -1,34 +1,33 @@
 <div ng-controller="ShowCtrl as carShowCtrl" class="padding show-car">
-	<div class="row" ng-include="'/views/car/_form.html'">
-
-	</div>
-
-	<div class="row status">
-		<div class="card">
-		  <div class="item item-text-wrap">
-		    État : Non remorqué
-		  </div>
-		</div>
-
-	</div>
-
-
-	<div class="row actions">
-		<div class="list">
-
-		  <ion-item class="item item-icon-right" href="#" ng-click="requestSave()">
-		    <i class="icon ion-checkmark-circled"></i>
-		    Sauvegarder
-		  </ion-item>
-
-		  <a class="item item-icon-right" href="#" ng-click="requestDelete()">
-		    <i class="icon ion-trash-a"></i>
-		    Supprimer
-		  </a>
-
+	<form name="form" novalidate>
+		<div class="row" ng-include="'/views/car/_form.html'">
 
 		</div>
 
-	</div>
+		<div class="row status">
+			<div class="card">
+			  <div class="item item-text-wrap">
+			    État : Non remorqué
+			  </div>
+			</div>
+
+		</div>
+
+
+		<div class="row actions">
+			<div class="list">
+
+				<button ng-click="requestSave()" ng-disabled="form.$invalid" class="button icon-right ion-checkmark-circled">
+					Sauvegarder
+				</button>
+
+				<button ng-click="requestDelete()" ng-disabled="form.$invalid" class="button icon-right ion-trash-a">
+					Supprimer
+				</button>
+
+			</div>
+
+		</div>
+	</form>
 	
 </div>

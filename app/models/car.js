@@ -51,7 +51,7 @@ module.factory('CarModel', function(localStorageService){
 
 
 	var empty = function(){
-		return localStorageService.clearAll();
+		return localStorageService.remove("cars");
 	}
 
 
@@ -69,6 +69,24 @@ module.factory('CarModel', function(localStorageService){
 	}
 
 
+	var removeById = function(id){
+		cars = getAll();
+		var counter = 0;
+		cars.forEach(function(c) {
+			if (c.id == id){
+				cars.splice(counter,1);
+				return true;
+			} else{
+				counter++;
+			}
+		});
+
+		empty();
+		localStorageService.set("cars", cars);
+		return counter;
+	}
+
+
 	var defaultCar = function(){
 		return {
 	        "id": "",
@@ -79,12 +97,27 @@ module.factory('CarModel', function(localStorageService){
 	}
 
 
+	var save = function(car, onSucessCallback, onFailCallback){
+
+		var index = removeById(car.id);
+		var cars = getAll();
+		cars.splice(index, 0, car);
+		empty();
+		localStorageService.set("cars", cars);
+		console.log(cars);
+
+		onSucessCallback();
+
+	}
+
+
 	return {
 		initData : initData,
 		empty : empty,
 		getAll : getAll,
 		getById : getById,
-		defaultCar : defaultCar
+		defaultCar : defaultCar,
+		save : save
 	}
 })
 

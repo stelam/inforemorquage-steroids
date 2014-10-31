@@ -1,7 +1,6 @@
 angular.module('steroidsBridge', ['ngCordova'])
   .factory('UIInitializer', function() {
 
-
     var initNavigationBar = function (title) {
       steroids.view.navigationBar.show(title);
       steroids.view.setBackgroundColor("#FFFFFF");
@@ -9,7 +8,7 @@ angular.module('steroidsBridge', ['ngCordova'])
 
     var initNavigationMenuButton = function() {
       var menuButton = new steroids.buttons.NavigationBarButton();
-      menuButton.imagePath = "/vendor/ionic/icons/png/512/navicon-round.png";
+      menuButton.imagePath = "icons/navicon-round.png";
       menuButton.imageAsOriginal = "false";
       menuButton.onTap = function() { 
           steroids.drawers.show( {
@@ -28,6 +27,7 @@ angular.module('steroidsBridge', ['ngCordova'])
       });
 
     };
+
 
 
     return {
