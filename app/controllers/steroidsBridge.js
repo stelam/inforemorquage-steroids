@@ -61,17 +61,17 @@ angular.module('steroidsBridge', ['ngCordova'])
       goHome: goHome,
     }
 
-  }).factory('CameraManager', function($cordovaCamera){
+  }).factory('CameraManager', ['$cordovaCamera', 'Helpers', function($cordovaCamera, Helpers){
 
 
     var takePicture = function(callback){
       var options = { 
-          quality : 50, 
+          quality : 80, 
           destinationType : Camera.DestinationType.FILE_URI, 
           sourceType : Camera.PictureSourceType.CAMERA, 
           encodingType: Camera.EncodingType.JPEG,
-          targetWidth: 300,
-          targetHeight: 300,
+          targetWidth: 600,
+          targetHeight: 600,
           saveToPhotoAlbum: false
       };
 
@@ -81,12 +81,12 @@ angular.module('steroidsBridge', ['ngCordova'])
 
     var browsePicture = function(callback){
       var options = { 
-          quality : 50, 
+          quality : 80, 
           destinationType : Camera.DestinationType.FILE_URI, 
           sourceType : Camera.PictureSourceType.PHOTOLIBRARY, 
           encodingType: Camera.EncodingType.JPEG,
-          targetWidth: 300,
-          targetHeight: 300,
+          targetWidth: 600,
+          targetHeight: 600,
           saveToPhotoAlbum: false
       };
 
@@ -95,9 +95,12 @@ angular.module('steroidsBridge', ['ngCordova'])
 
 
     var saveImage = function(options, callback){
-      $cordovaCamera.getPicture(options).then(function(imageURI) {
-        // Move the file
+      navigator.camera.getPicture(gotPicture, fileError, options);
 
+      Helpers.cordovaCallbackFix("Photo");
+
+      function gotPicture(imageURI){
+        // Move the file
         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fileSys) {
           window.resolveLocalFileSystemURL(imageURI, function(file) {
             var d = new Date();
@@ -114,25 +117,39 @@ angular.module('steroidsBridge', ['ngCordova'])
                 }, fileError);
               }, fileError);
             })
-
           });
         });
+      }
 
+      function fileError(error){
+        console.log(error);
+      }
 
-        fileError = function(error){
-          console.log(error);
-        }
-
-      }, function(err) {
-        // An error occured. Show a message to the user
-        return false;
-      });
     }
+
+
 
 
     return {
       takePicture : takePicture,
       browsePicture : browsePicture
     }
+
+
+  }]).factory('Helpers', function($cordovaToast){
+
+    var cordovaCallbackFix = function(msg){
+      $cordovaToast.showShortTop(msg).then(function(success) {
+        // success
+      }, function (error) {
+        // error
+      });
+    }
+
+    return {
+      cordovaCallbackFix : cordovaCallbackFix
+    }
   })
+
+
 

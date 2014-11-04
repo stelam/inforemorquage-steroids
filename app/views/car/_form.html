@@ -1,7 +1,9 @@
 	
 		<div class="col col-image">
 			<div>
-				<img ng-src="{{car.imageURL}}" />		
+				<div class="square-img">
+					<img ng-src="{{car.imageURL}}" />		
+				</div>
 				<button ng-click="requestCamera()" id="camera" class="button icon ion-camera"></button>
 				<button ng-click="requestFileBrowser()" id="browse-photo" class="button icon ion-ios7-folder"></button>
 			</div>

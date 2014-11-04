@@ -25,9 +25,14 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarModel', 'CarResta
   };
 
 
+  $scope.goAddNew = function(){
+    ViewManager.goToLoadedView("http://localhost/views/car/new.html/", "newCar");
+  }
+
 
   // Load some cars
   $scope.cars = CarModel.initData();
+  //$scope.cars = CarModel.getAll();
 
 
 
@@ -47,6 +52,7 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarModel', 'CarResta
     UIInitializer.initNavigationBar('Vos voitures');
     UIInitializer.initNavigationMenuButton();
 
+    /*
     // Preload show car view
     webView = new steroids.views.WebView({
       location: "http://localhost/views/car/show.html/",
@@ -67,7 +73,7 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarModel', 'CarResta
       id: "configuration"
     });  
     webView.preload();
-
+    */
 
     console.log(steroids.getApplicationState({},{
       onSuccess: function(){
@@ -86,7 +92,7 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarModel', 'CarResta
 
 
 // Show: http://localhost/views/car/show.html?id=<id>
-carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter', 'CarRestangular', 'ViewManager', '$route', '$routeParams', '$location', '$cordovaDialogs', '$cordovaToast', 'CameraManager', function (UIInitializer, $scope, CarModel, $filter, CarRestangular, ViewManager, $route, $routeParams, $location, $cordovaDialogs, $cordovaToast, CameraManager) {
+carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter', 'CarRestangular', 'ViewManager', '$route', '$routeParams', '$location', '$cordovaDialogs', '$cordovaToast', 'CameraManager', 'Helpers', function (UIInitializer, $scope, CarModel, $filter, CarRestangular, ViewManager, $route, $routeParams, $location, $cordovaDialogs, $cordovaToast, CameraManager, Helpers) {
   
 
   // empty the car ojbect
@@ -113,6 +119,7 @@ carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter',
 
   // L'utilisateur a demandé la suppression d'un véhicule
   $scope.requestDelete = function(){
+    Helpers.cordovaCallbackFix("Suppression");
 
     // Les dialogues confirm sont présentement problématiques
     // http://stackoverflow.com/questions/22410659/cordova-on-android-navigator-notification-confirm-callbacks-stuck-in-queue
@@ -127,9 +134,9 @@ carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter',
   // Suppression du véhicule (à implémenter)
   $scope.delete = function(){
     // ViewManager.goHome();
-    steroids.layers.pop();
-
-   $cordovaToast.showShortTop('Véhicule supprimé').then(function(success) {
+    CarModel.removeById($scope.car.id);
+    $scope.onDeleteSuccess();
+    $cordovaToast.showShortTop('Véhicule supprimé').then(function(success) {
       // success
     }, function (error) {
       // error
@@ -139,12 +146,13 @@ carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter',
 
 
   $scope.requestSave = function(){
-    CarModel.save($scope.car, $scope.onCarSaveSuccess, $scope.onCarSaveFail);
+    CarModel.save($scope.car, $scope.onCarSaveSuccess);
   }
 
 
   $scope.requestCamera = function(){
     CameraManager.takePicture($scope.imageReceived);
+    return false;
   }
 
   $scope.requestFileBrowser = function(){
@@ -158,20 +166,24 @@ carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter',
 
 
   $scope.onCarSaveSuccess = function(){
-    $cordovaToast.showShortTop('Véhicule enregistré').then(function(success) {
-      // success
-      window.postMessage({
-        action: "refreshCars"
-      });
-
-    }, function (error) {
-      // error
+    Helpers.cordovaCallbackFix("Sauvegarde");
+    steroids.layers.pop(); 
+    window.postMessage({
+      action: "refreshCars"
     });
+    $cordovaToast.showShortTop('Véhicule enregistré');
   }
 
-  $scope.onCarSaveFail = function(error){
-    $cordovaToast.showShortTop('Erreur d\'enregistrement').then(function(success) {
+
+  $scope.onDeleteSuccess = function(){
+    Helpers.cordovaCallbackFix("Suppression");
+    steroids.layers.pop(); 
+    window.postMessage({
+      action: "refreshCars"
+    });
+    $cordovaToast.showShortTop('Véhicule supprimé').then(function(success) {
       // success
+
     }, function (error) {
       // error
     });
@@ -186,13 +198,14 @@ carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter',
 
 
 
-carApp.controller('NewCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter', 'CarRestangular', 'ViewManager', '$cordovaDialogs', function (UIInitializer, $scope, CarModel, $filter, CarRestangular, ViewManager, $cordovaDialogs) {
+carApp.controller('NewCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter', 'CarRestangular', 'ViewManager', '$cordovaDialogs', 'Helpers', '$cordovaToast', function (UIInitializer, $scope, CarModel, $filter, CarRestangular, ViewManager, $cordovaDialogs, Helpers, $cordovaToast) {
   // empty the car ojbect
   $scope.car = CarModel.defaultCar();
 
   this.messageReceived = function(event) {
     
     if (event.data.action == "openFromDrawer" && event.data.viewId == "newCar"){
+      // Native navigation
       UIInitializer.initNavigationBar('Nouveau véhicule');
       UIInitializer.initNavigationMenuButton();
     }
@@ -200,11 +213,29 @@ carApp.controller('NewCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter', 
   window.addEventListener("message", this.messageReceived);
 
 
-  $scope.open = function(id) {
+  $scope.requestCreate = function(){
+    CarModel.create($scope.car, $scope.onCarCreateSuccess);
+  };
+
+
+  $scope.onCarCreateSuccess = function(){
+    Helpers.cordovaCallbackFix("Création");
+    $scope.car = CarModel.defaultCar();
+
+    steroids.layers.pop(); 
+    window.postMessage({
+      action: "refreshCars"
+    });
+    $cordovaToast.showShortTop('Véhicule créé');
+
+    $scope.form.$setPristine();
+  };
+
+
+  $scope.cancel = function(id) {
     steroids.layers.pop(); 
   };
 
-  // Native navigation
   
 }]);
 

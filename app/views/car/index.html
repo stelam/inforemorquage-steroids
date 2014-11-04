@@ -1,18 +1,24 @@
 
 
 
-<ion-list ng-controller="IndexCtrl">
+<ion-list ng-controller="IndexCtrl" class="index-car">
 	<div ng-repeat="car in cars" ng-click="open(car.id)">
 		<ion-item class="item-stable item-thumbnail-left item-icon-right"
 			ng-click="toggleCar(car)"
 			ng-class="{active: isCarShown(car)}">
-
-			<img ng-src="{{car.imageURL}}">	          
-			<h2>{{car.name}}</h2> 
-			<p>Plaque</p>
+			<div class="square-img-80">
+				<img ng-src="{{car.imageURL}}">	          
+			</div>
+			<h2 class="animated fadeInDown delay-1">{{car.name}}</h2> 
+			<p class="animated fadeInDown delay-2">{{car.registration}}</p>
 			<i class="icon ion-ios7-arrow-right"></i>
 
 		</ion-item>
 	</div>
 </ion-list>
 
+<div class="padding" ng-controller="IndexCtrl">
+	<button ng-click="goAddNew()" class="add-new-button button button-block button-stable ion-plus-round">
+	  Ajouter un véhicule
+	</button>
+</div>

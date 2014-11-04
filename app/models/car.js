@@ -32,13 +32,25 @@ module.factory('CarModel', function(localStorageService){
 	        "id": 1,
 	        "name": "First car",
 	        "registration": "H1Z2Z1",
-	        "imageURL" : "/images/sample.jpg"
+	        "imageURL" : "/images/sample-02.jpg"
 	      },
 	      {
 	        "id": 2,
 	        "name": "Second car",
 	        "registration": "H1Z2Z1",
-	        "imageURL" : "/images/samasdple.jpg"
+	        "imageURL" : "/images/sample-03.jpg"
+	      },
+	      {
+	        "id": 3,
+	        "name": "third car",
+	        "registration": "H1Z2Z1",
+	        "imageURL" : "/images/sample-04.jpg"
+	      },
+	      {
+	        "id": 4,
+	        "name": "fourth car",
+	        "registration": "H1Z2Z1",
+	        "imageURL" : "/images/sample-05.jpg"
 	      }
 	    ];
 	    localStorageService.set("cars", data);
@@ -65,25 +77,23 @@ module.factory('CarModel', function(localStorageService){
 		});
 
 		return car;
-
 	}
 
 
 	var removeById = function(id){
 		cars = getAll();
-		var counter = 0;
-		cars.forEach(function(c) {
+		var index = 0;
+		cars.some(function(c, i) {
+			index = i;
 			if (c.id == id){
-				cars.splice(counter,1);
+				cars.splice(index,1);
 				return true;
-			} else{
-				counter++;
 			}
 		});
 
 		empty();
 		localStorageService.set("cars", cars);
-		return counter;
+		return index;
 	}
 
 
@@ -97,17 +107,27 @@ module.factory('CarModel', function(localStorageService){
 	}
 
 
-	var save = function(car, onSucessCallback, onFailCallback){
-
+	var save = function(car, onSucessCallback){
 		var index = removeById(car.id);
 		var cars = getAll();
 		cars.splice(index, 0, car);
 		empty();
 		localStorageService.set("cars", cars);
-		console.log(cars);
 
 		onSucessCallback();
+	}
 
+
+	var create = function(car, onSucessCallback){
+		var cars = getAll();
+
+		// On set un nouveau ID qui correspond au ID du dernier véhicule + 1
+		car.id = cars[cars.length - 1]['id'] + 1;
+		
+		cars.push(car);
+		localStorageService.set("cars", cars);
+
+		onSucessCallback();
 	}
 
 
@@ -117,7 +137,9 @@ module.factory('CarModel', function(localStorageService){
 		getAll : getAll,
 		getById : getById,
 		defaultCar : defaultCar,
-		save : save
+		save : save,
+		removeById : removeById,
+		create : create
 	}
 })
 

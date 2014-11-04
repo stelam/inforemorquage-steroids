@@ -1,25 +1,25 @@
 <div ng-controller="NewCtrl as newCarCtrl" class="padding show-car">
-	<div class="row" ng-include="'/views/car/_form.html'">
-
-	</div>
-
-
-	<div class="row actions">
-		<div class="list">
-
-		  <ion-item class="item item-icon-right" href="#" >
-		    <i class="icon ion-checkmark-circled"></i>
-		    Créer
-		  </ion-item>
-
-		  <a class="item item-icon-right" href="#" ng-click="open('opi')">
-		    <i class="icon ion-ios7-close-empty"></i>
-		    Annuler
-		  </a>
-
+	<form name="form" novalidate>
+		<div class="row" ng-include="'/views/car/_form.html'">
 
 		</div>
 
-	</div>
+
+		<div class="row actions">
+			<div class="list">
+
+
+				<button ng-click="requestCreate()" ng-disabled="form.$invalid" class="button icon-right ion-checkmark-circled">
+					Créer
+				</button>
+
+				<button ng-click="cancel()" class="button icon-right ion-ios7-close-empty">
+					Annuler
+				</button>
+
+			</div>
+
+		</div>
+	</form>
 	
 </div>
