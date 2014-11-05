@@ -8,7 +8,7 @@ if ( typeof angular == 'undefined' ) {
 };
 
 
-var module = angular.module('CarModelApp', ['restangular', 'LocalStorageModule']);
+var module = angular.module('CarModelApp', ['restangular', 'LocalStorageModule', 'TowingModelApp']);
 
 module.factory('CarRestangular', function(Restangular) {
 
@@ -25,32 +25,40 @@ module.factory('CarRestangular', function(Restangular) {
 });
 
 
-module.factory('CarModel', function(localStorageService){
+module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function(localStorageService, TowingModel, $q){
 	var initData = function(){
 	    var data = [
 	      {
 	        "id": 1,
 	        "name": "First car",
-	        "registration": "H1Z2Z1",
-	        "imageURL" : "/images/sample-02.jpg"
+	        "registration": "ABC123",
+	        "imageURL" : "/images/sample-02.jpg",
+	        "towings" : [],
+	        "statusLoaded" : false
 	      },
 	      {
 	        "id": 2,
 	        "name": "Second car",
 	        "registration": "H1Z2Z1",
-	        "imageURL" : "/images/sample-03.jpg"
+	        "imageURL" : "/images/sample-03.jpg",
+	        "towings" : [],
+	        "statusLoaded" : false
 	      },
 	      {
 	        "id": 3,
 	        "name": "third car",
 	        "registration": "H1Z2Z1",
-	        "imageURL" : "/images/sample-04.jpg"
+	        "imageURL" : "/images/sample-04.jpg",
+	        "towings" : [],
+	        "statusLoaded" : false
 	      },
 	      {
 	        "id": 4,
 	        "name": "fourth car",
 	        "registration": "H1Z2Z1",
-	        "imageURL" : "/images/sample-05.jpg"
+	        "imageURL" : "/images/sample-05.jpg",
+	        "towings" : [],
+	        "statusLoaded" : false
 	      }
 	    ];
 	    localStorageService.set("cars", data);
@@ -59,6 +67,30 @@ module.factory('CarModel', function(localStorageService){
 
 	var getAll = function(){
 		return localStorageService.get("cars");
+	}
+
+
+	var requestTowingStatuses = function(cars){
+		var deferred = $q.defer();
+		var statusCount = 0;
+
+		cars.forEach(function(car) {
+			TowingModel.requestStatus(car.registration).then(function(towingJson){
+				car.towings.push(towingJson);
+				car.statusLoaded = true;
+				statusCount++;
+
+				// Si on a reçu tous les status
+				if (statusCount == cars.length){
+					saveAll(cars);
+					deferred.resolve(cars);
+				}
+			})
+		});
+
+
+
+		return deferred.promise;
 	}
 
 
@@ -102,7 +134,8 @@ module.factory('CarModel', function(localStorageService){
 	        "id": "",
 	        "name": "",
 	        "registration": "",
-	        "imageURL" : "/images/sample.jpg"
+	        "imageURL" : "/images/default.png",
+	        "towings" : []
 	      }
 	}
 
@@ -118,12 +151,17 @@ module.factory('CarModel', function(localStorageService){
 	}
 
 
+	var saveAll = function(cars){
+		localStorageService.set("cars", cars);
+	}
+
+
 	var create = function(car, onSucessCallback){
 		var cars = getAll();
 
 		// On set un nouveau ID qui correspond au ID du dernier véhicule + 1
 		car.id = cars[cars.length - 1]['id'] + 1;
-		
+
 		cars.push(car);
 		localStorageService.set("cars", cars);
 
@@ -139,9 +177,10 @@ module.factory('CarModel', function(localStorageService){
 		defaultCar : defaultCar,
 		save : save,
 		removeById : removeById,
-		create : create
+		create : create,
+		requestTowingStatuses : requestTowingStatuses
 	}
-})
+}])
 
 
 })();

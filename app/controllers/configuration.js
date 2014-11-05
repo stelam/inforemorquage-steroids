@@ -17,10 +17,14 @@ configurationApp.controller('IndexCtrl', ['$scope', 'ConfigurationRestangular', 
   });
 
   // Native navigation
-  steroids.on('ready', function() {
-    UIInitializer.initNavigationBar('Configuration');
-    UIInitializer.initNavigationMenuButton();
-  });
+  this.messageReceived = function(event) {
+    if (event.data.action == "openFromDrawer" && event.data.viewId == "configuration"){
+      // Native navigation
+      UIInitializer.initNavigationBar('Configuration');
+      UIInitializer.initNavigationMenuButton();
+    }
+  }
+  window.addEventListener("message", this.messageReceived);
 
 
 }]);

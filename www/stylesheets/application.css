@@ -73,6 +73,7 @@ a.item-icon-right:after, button.item-icon-right:after, a.item-button-right:after
 	display: inline;
 	left: 10px;
 	bottom: 26px;
+	overflow: visible;
 }
 .index-car .item p {
 	position: absolute;
@@ -83,6 +84,44 @@ a.item-icon-right:after, button.item-icon-right:after, a.item-button-right:after
 	font-size: 8px;
 	padding: 0px 5px;
 }
+
+.status {
+	position: absolute;
+	z-index: 1;
+	top: 0px;
+	right: -39px;
+	overflow: hidden;
+	text-align: center;
+	background: rgba(255,255,255,0.8);
+	height: 39px;
+	width: 39px;
+}
+
+.status .icon{
+	right: auto;
+	left: 4px;
+}
+
+.status .loading-icon-container{
+	height: 39px;
+}
+
+.status .icon::before{
+	text-shadow: none !important;
+	color: rgba(0,0,0,0.5) !important;
+}
+
+.status .loading{
+	left: -16px;
+	background: none;
+}
+
+.status .ok::before {
+	text-shadow: none !important;
+	color: rgba(0,0,0,0.5) !important;
+}
+
+
 
 .add-new-button {margin-top: 20px; margin-bottom: 20px;}
 
@@ -150,14 +189,41 @@ input.ng-valid.ng-dirty {
     } 
 } 
 
+@-webkit-keyframes fadeInRight { 
+    0% { 
+        opacity: 0; 
+        -webkit-transform: translateX(-20px); 
+    } 
+    100% { 
+        opacity: 1; 
+        -webkit-transform: translateX(0); 
+    } 
+} 
+
+@keyframes fadeInRight { 
+    0% { 
+        opacity: 0; 
+        transform: translateX(-20px); 
+    } 
+    100% { 
+        opacity: 1; 
+        transform: translateX(0); 
+    } 
+} 
+
 .fadeInDown { 
     -webkit-animation-name: fadeInDown; 
     animation-name: fadeInDown; 
 }
 
+.fadeInRight { 
+    -webkit-animation-name: fadeInRight; 
+    animation-name: fadeInRight; 
+}
+
 .delay-1{
-	-webkit-animation-delay: 1.5s; /* Chrome, Safari, Opera */
-	animation-delay: 1.5s;
+	-webkit-animation-delay: 2s; /* Chrome, Safari, Opera */
+	animation-delay: 2s;
 }
 
 .delay-2{

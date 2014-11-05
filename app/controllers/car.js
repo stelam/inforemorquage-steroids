@@ -12,7 +12,7 @@ carApp.config(function ($routeProvider, $locationProvider) {
 
 
 // Index: http://localhost/views/car/index.html
-carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarModel', 'CarRestangular', 'ViewManager', 'drawerOpenPageService', function (UIInitializer, $scope, CarModel, CarRestangular, ViewManager, drawerOpenPageService) {
+carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarModel', 'ViewManager', 'drawerOpenPageService', function (UIInitializer, $scope, CarModel, ViewManager, drawerOpenPageService) {
 
 
   // Helper function for opening new webviews
@@ -32,6 +32,9 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarModel', 'CarResta
 
   // Load some cars
   $scope.cars = CarModel.initData();
+  CarModel.requestTowingStatuses($scope.cars).then(function(cars){
+    console.log($scope.cars)
+  });
   //$scope.cars = CarModel.getAll();
 
 
@@ -39,9 +42,11 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarModel', 'CarResta
   this.messageReceived = function(event) {
     if (event.data.action == "refreshCars"){
       $scope.cars = CarModel.getAll();
-      console.log($scope.cars);
+      CarModel.requestTowingStatuses($scope.cars).then(function(cars){
+        
+      });
+
       $scope.$apply();
-      
     }
   }
   window.addEventListener("message", this.messageReceived);
@@ -52,7 +57,7 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarModel', 'CarResta
     UIInitializer.initNavigationBar('Vos voitures');
     UIInitializer.initNavigationMenuButton();
 
-    /*
+    
     // Preload show car view
     webView = new steroids.views.WebView({
       location: "http://localhost/views/car/show.html/",
@@ -73,7 +78,7 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarModel', 'CarResta
       id: "configuration"
     });  
     webView.preload();
-    */
+    
 
     console.log(steroids.getApplicationState({},{
       onSuccess: function(){
@@ -92,7 +97,7 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarModel', 'CarResta
 
 
 // Show: http://localhost/views/car/show.html?id=<id>
-carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter', 'CarRestangular', 'ViewManager', '$route', '$routeParams', '$location', '$cordovaDialogs', '$cordovaToast', 'CameraManager', 'Helpers', function (UIInitializer, $scope, CarModel, $filter, CarRestangular, ViewManager, $route, $routeParams, $location, $cordovaDialogs, $cordovaToast, CameraManager, Helpers) {
+carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter', 'ViewManager', '$route', '$routeParams', '$location', '$cordovaDialogs', '$cordovaToast', 'CameraManager', 'Helpers', function (UIInitializer, $scope, CarModel, $filter, ViewManager, $route, $routeParams, $location, $cordovaDialogs, $cordovaToast, CameraManager, Helpers) {
   
 
   // empty the car ojbect
@@ -198,7 +203,7 @@ carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter',
 
 
 
-carApp.controller('NewCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter', 'CarRestangular', 'ViewManager', '$cordovaDialogs', 'Helpers', '$cordovaToast', function (UIInitializer, $scope, CarModel, $filter, CarRestangular, ViewManager, $cordovaDialogs, Helpers, $cordovaToast) {
+carApp.controller('NewCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter', 'ViewManager', '$cordovaDialogs', 'Helpers', '$cordovaToast', function (UIInitializer, $scope, CarModel, $filter, ViewManager, $cordovaDialogs, Helpers, $cordovaToast) {
   // empty the car ojbect
   $scope.car = CarModel.defaultCar();
 

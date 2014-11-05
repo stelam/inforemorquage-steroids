@@ -1,4 +1,4 @@
-angular.module('steroidsBridge', ['ngCordova'])
+angular.module('steroidsBridge', ['ngCordova', 'LocalStorageModule'])
   .factory('UIInitializer', function() {
 
     var initNavigationBar = function (title) {
@@ -35,23 +35,38 @@ angular.module('steroidsBridge', ['ngCordova'])
       initNavigationMenuButton: initNavigationMenuButton
     };
 
-  }).factory('ViewManager', function(){
+  }).factory('ViewManager', function(localStorageService){
     var transitionComplete = true;
 
-    var goToLoadedView = function (viewLocation, viewId){
-      webView = new steroids.views.WebView({
-        location: viewLocation,
-        id: viewId
-      });  
 
-      if (transitionComplete){
-        transitionComplete = false;
-        steroids.layers.push({view:webView},{onSuccess:function(){transitionComplete = true}, onFailure:function(error){console.log(error)}}); 
+    var goToLoadedView = function (viewLocation, viewId){
+
+
+      if (localStorageService.get("lastLoadedViewId") != viewId){
+
+        // Sauvegarder la dernière vue demandée pour ne pas faire apparaître des
+        // vues en double
+        // Il va falloir mettre ça sur layers.on("change") quand ce callback
+        // sera disopnible via Steroids
+        localStorageService.set("lastLoadedViewId", viewId);
+
+
+        webView = new steroids.views.WebView({
+          location: viewLocation,
+          id: viewId
+        });  
+
+        // Ne pas charger une vue avant que la transition soit terminée
+        if (transitionComplete){
+          transitionComplete = false;
+          steroids.layers.push({view:webView},{onSuccess:function(){transitionComplete = true}, onFailure:function(error){console.log(error)}}); 
+        }
       }
 
     };
 
     var goHome = function (){
+      localStorageService.set("lastLoadedViewId", viewId);
       this.goToLoadedView("/views/car/index.html", "dashboard");
     }
 
@@ -95,9 +110,9 @@ angular.module('steroidsBridge', ['ngCordova'])
 
 
     var saveImage = function(options, callback){
-      navigator.camera.getPicture(gotPicture, fileError, options);
-
       Helpers.cordovaCallbackFix("Photo");
+
+      navigator.camera.getPicture(gotPicture, fileError, options);
 
       function gotPicture(imageURI){
         // Move the file

@@ -9,9 +9,19 @@
 			<div class="square-img-80">
 				<img ng-src="{{car.imageURL}}">	          
 			</div>
-			<h2 class="animated fadeInDown delay-1">{{car.name}}</h2> 
+			<h2 class="animated fadeInDown delay-1">
+				{{car.name}}
+				<div class="status animated fadeInRight delay-2">
+					<div class="loading-icon-container">
+						<i ng-show="!statusLoaded" class="ion-loading-c icon loading"></i>
+					</div>
+					<i ng-show="statusLoaded" class="ion-checkmark-circled icon ok"></i>
+					<!--<i class="ion-alert-circled icon towed"></i>-->
+				</div>
+			</h2> 
 			<p class="animated fadeInDown delay-2">{{car.registration}}</p>
 			<i class="icon ion-ios7-arrow-right"></i>
+
 
 		</ion-item>
 	</div>

@@ -25,4 +25,7 @@ module.factory('MenuDrawerRestangular', function(Restangular) {
 });
 
 
+
+
+
 })();
