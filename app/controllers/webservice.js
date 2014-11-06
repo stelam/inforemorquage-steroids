@@ -1,7 +1,7 @@
 
 angular.module('webserviceApp', ['ngTouch'])
 
-  .factory("requestFactory", function($http, $q){
+  .factory("requestFactory", function($http, $q, $timeout){
     var factory = [];
 
     factory.getXml = function(url){
@@ -13,9 +13,12 @@ angular.module('webserviceApp', ['ngTouch'])
       // CORS est très strict.
       var corsProxyUrl = "www.corsproxy.com/";
 
-      deferred.resolve(
-        $http.get(url.replace("//", "//" + corsProxyUrl))
-      );
+      $timeout(function(){
+        deferred.resolve(
+          $http.get(url.replace("//", "//" + corsProxyUrl))
+        );
+      }, 2500);
+
 
       return deferred.promise;
     }

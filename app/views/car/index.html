@@ -13,10 +13,15 @@
 				{{car.name}}
 				<div class="status animated fadeInRight delay-2">
 					<div class="loading-icon-container">
-						<i ng-show="!statusLoaded" class="ion-loading-c icon loading"></i>
+						<i ng-show="!car.statusLoaded" ng-model="car.statusLoaded" class="ion-loading-c icon loading"></i>
 					</div>
-					<i ng-show="statusLoaded" class="ion-checkmark-circled icon ok"></i>
-					<!--<i class="ion-alert-circled icon towed"></i>-->
+					<div class="icon-container" ng-hide="!car.statusLoaded" ng-model="car.statusLoaded">
+						<i ng-hide="car.towed" ng-model="car.towed" class="ion-checkmark-circled icon ok"></i>
+					</div>
+					
+					<div class="icon-container" ng-hide="!car.statusLoaded" ng-model="car.statusLoaded">
+						<i ng-hide="!car.towed" ng-model="car.towed" class="ion-alert-circled icon towed"></i>
+					</div>
 				</div>
 			</h2> 
 			<p class="animated fadeInDown delay-2">{{car.registration}}</p>

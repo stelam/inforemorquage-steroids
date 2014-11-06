@@ -1,4 +1,4 @@
-/*! steroids-js - v3.5.5 - 2014-10-09 17:51 */
+/*! steroids-js - v3.5.7 - 2014-11-06 14:51 */
 (function(window){
 var Bridge,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -565,6 +565,8 @@ JSCoreBridge = (function(_super) {
 Events = (function() {
   function Events() {}
 
+  Events.eventCounter = Date.now();
+
   Events.dispatchVisibilitychangedEvent = function(options) {
     var visibilityChangeCustomEvent;
     if (options == null) {
@@ -616,7 +618,7 @@ Events = (function() {
   };
 
   Events.extend = function(options, callbacks) {
-    var becomeHiddenEvent, becomeVisibleEvent, focusAdded, lostFocusAdded,
+    var becomeHiddenEvent, becomeVisibleEvent, event, eventHandlerId, focusAdded, lostFocusAdded,
       _this = this;
     if (options == null) {
       options = {};
@@ -632,13 +634,17 @@ Events = (function() {
     this.initializeVisibilityState();
     this.checkInitialVisibility();
     focusAdded = function() {
+      var event, eventHandlerId;
       steroids.debug({
         msg: "focus added"
       });
+      event = "lostFocus";
+      eventHandlerId = ++Events.eventCounter;
       return steroids.nativeBridge.nativeCall({
         method: "addEventListener",
         parameters: {
-          event: "lostFocus"
+          event: event,
+          eventHandlerId: "" + event + "_" + eventHandlerId
         },
         successCallbacks: [lostFocusAdded, callbacks.onSuccess],
         recurringCallbacks: [becomeHiddenEvent, callbacks.onFailure]
@@ -666,10 +672,13 @@ Events = (function() {
       document.hidden = true;
       return _this.dispatchVisibilitychangedEvent();
     };
+    event = "focus";
+    eventHandlerId = ++Events.eventCounter;
     return steroids.nativeBridge.nativeCall({
       method: "addEventListener",
       parameters: {
-        event: "focus"
+        event: event,
+        eventHandlerId: "" + event + "_" + eventHandlerId
       },
       successCallbacks: [focusAdded, callbacks.onSuccess],
       recurringCallbacks: [becomeVisibleEvent, callbacks.onFailure]
@@ -3794,7 +3803,7 @@ PostMessage = (function() {
 ;var _this = this;
 
 window.steroids = {
-  version: "3.5.5",
+  version: "3.5.7",
   Animation: Animation,
   File: File,
   views: {

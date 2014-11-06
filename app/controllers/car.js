@@ -1,4 +1,4 @@
-var carApp = angular.module('carApp', ['CarModelApp', 'LocalStorageModule', 'ngTouch', 'mainApp', 'steroidsBridge', 'ionic', 'ngRoute', 'ngCordova']);
+var carApp = angular.module('carApp', ['CarModelApp', 'LocalStorageModule', 'ngTouch', 'mainApp', 'steroidsBridge', 'ionic', 'ngRoute', 'ngCordova', 'ngAnimate']);
 
 
 carApp.config(function ($routeProvider, $locationProvider) {
@@ -33,7 +33,7 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarModel', 'ViewMana
   // Load some cars
   $scope.cars = CarModel.initData();
   CarModel.requestTowingStatuses($scope.cars).then(function(cars){
-    console.log($scope.cars)
+    console.log($scope.cars);
   });
   //$scope.cars = CarModel.getAll();
 
@@ -45,8 +45,15 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarModel', 'ViewMana
       CarModel.requestTowingStatuses($scope.cars).then(function(cars){
         
       });
-
       $scope.$apply();
+    }
+
+
+    if (event.data.action == "refershCarById"){
+      var car = CarModel.getById(event.data.carId);
+      CarModel.replaceExistingCar($scope.cars, car).then(function(cars){
+        $scope.apply();
+      });
     }
   }
   window.addEventListener("message", this.messageReceived);
@@ -151,7 +158,15 @@ carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter',
 
 
   $scope.requestSave = function(){
-    CarModel.save($scope.car, $scope.onCarSaveSuccess);
+    Helpers.cordovaCallbackFix("Sauvegarde");
+    CarModel.save($scope.car).then(function(car){
+      steroids.layers.pop(); 
+      $cordovaToast.showShortTop('Véhicule enregistré');
+      window.postMessage({
+        action: "refershCarById",
+        carId : car.id
+      });
+    });
   }
 
 
@@ -167,16 +182,6 @@ carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter',
   $scope.imageReceived = function(imageURL){
     $scope.car.imageURL = imageURL;
     $scope.$apply();
-  }
-
-
-  $scope.onCarSaveSuccess = function(){
-    Helpers.cordovaCallbackFix("Sauvegarde");
-    steroids.layers.pop(); 
-    window.postMessage({
-      action: "refreshCars"
-    });
-    $cordovaToast.showShortTop('Véhicule enregistré');
   }
 
 

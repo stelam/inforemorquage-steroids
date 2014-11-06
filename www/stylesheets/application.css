@@ -60,6 +60,7 @@ a.item-icon-right:after, button.item-icon-right:after, a.item-button-right:after
 .show-car .actions .item,
 .show-car .actions button {margin-bottom: 10px; text-align: center; display: block; width: 100%;}
 
+.index-car .status > div {position: absolute; top: 0px;}
 .index-car .item-thumbnail-left {min-height: 150px; padding-left: 0px;}
 .index-car .item h2 {
 	position: absolute;
@@ -230,3 +231,75 @@ input.ng-valid.ng-dirty {
 	-webkit-animation-delay: 2.5s; /* Chrome, Safari, Opera */
 	animation-delay: 2.5s;
 }
+
+
+@-moz-keyframes spin3d {
+    0% { -moz-transform: rotate3d(0, 0, 1, 0deg); }
+    50% { -moz-transform: rotate3d(0, 0, 1, 180deg); }
+    100% { -moz-transform: rotate3d(0, 0, 1, 360deg); }
+}
+
+@-webkit-keyframes spin3d {
+    0% { -webkit-transform: rotate3d(0, 0, 1, 0deg); }
+    50% { -webkit-transform: rotate3d(0, 0, 1, 180deg); }
+    100% { -webkit-transform: rotate3d(0, 0, 1, 360deg); }
+}
+
+@-o-keyframes spin3d {
+    0% { -o-transform: rotate3d(0, 0, 1, 0deg); }
+    50% { -o-transform: rotate3d(0, 0, 1, 180deg); }
+    100% { -o-transform: rotate3d(0, 0, 1, 360deg); }
+}
+
+@-ms-keyframes spin3d {
+    0% { -ms-transform: rotate3d(0, 0, 1, 0deg); }
+    50% { -ms-transform: rotate3d(0, 0, 1, 180deg); }
+    100% { -ms-transform: rotate3d(0, 0, 1, 360deg); }
+}
+
+@keyframes spin3d {
+    0% { transform: rotate3d(0, 0, 1, 0deg); }
+    50% { transform: rotate3d(0, 0, 1, 180deg); }
+    100% { transform: rotate3d(0, 0, 1, 360deg); }
+}
+
+.ion-spin, .ion-loading-a, .ion-loading-b, .ion-loading-c, .ion-loading-d, .ion-looping, .ion-refreshing, .ion-ios7-reloading {
+	-webkit-animation: spin3d 1s infinite linear;
+	-moz-animation: spin3d 1s infinite linear;
+	-o-animation: spin3d 1s infinite linear;
+	animation: spin3d 1s infinite linear;
+}
+
+.ion-loading-c.ng-animate, .ion-loading-c.ng-hide {
+	-webkit-animation: none 0s;
+	-moz-animation: none 0s;
+	-o-animation: none 0s;
+	animation: none 0s;	
+}
+
+.icon-container {width: 39px; height: 39px; display: block;}
+
+.ng-hide-remove.ng-hide-remove-active.icon{
+	display: flex!important;
+}
+.ng-hide-remove.ng-hide-remove-active, .ng-hide-remove {
+	transition: all .5s;
+	display: block!important;
+    -webkit-animation-duration: 0.5s; 
+    animation-duration: 0.5s; 
+    -webkit-animation-fill-mode: both; 
+    animation-fill-mode: both; 
+    -webkit-animation-name: pulse; 
+    animation-name: pulse; 
+}
+
+@-webkit-keyframes pulse { 
+    0% { -webkit-transform: scale(1); } 
+    50% { -webkit-transform: scale(1.2); } 
+    100% { -webkit-transform: scale(1); } 
+} 
+@keyframes pulse { 
+    0% { transform: scale(1); } 
+    50% { transform: scale(1.2); } 
+    100% { transform: scale(1); } 
+} 

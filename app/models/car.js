@@ -34,7 +34,8 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 	        "registration": "ABC123",
 	        "imageURL" : "/images/sample-02.jpg",
 	        "towings" : [],
-	        "statusLoaded" : false
+	        "statusLoaded" : false,
+	        "towed" : false
 	      },
 	      {
 	        "id": 2,
@@ -42,7 +43,8 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 	        "registration": "H1Z2Z1",
 	        "imageURL" : "/images/sample-03.jpg",
 	        "towings" : [],
-	        "statusLoaded" : false
+	        "statusLoaded" : false,
+	        "towed" : false
 	      },
 	      {
 	        "id": 3,
@@ -50,7 +52,8 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 	        "registration": "H1Z2Z1",
 	        "imageURL" : "/images/sample-04.jpg",
 	        "towings" : [],
-	        "statusLoaded" : false
+	        "statusLoaded" : false,
+	        "towed" : false
 	      },
 	      {
 	        "id": 4,
@@ -58,7 +61,8 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 	        "registration": "H1Z2Z1",
 	        "imageURL" : "/images/sample-05.jpg",
 	        "towings" : [],
-	        "statusLoaded" : false
+	        "statusLoaded" : false,
+	        "towed" : false
 	      }
 	    ];
 	    localStorageService.set("cars", data);
@@ -78,6 +82,10 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 			TowingModel.requestStatus(car.registration).then(function(towingJson){
 				car.towings.push(towingJson);
 				car.statusLoaded = true;
+
+				car.towed = (towingJson.remorquage.statutReponse == 0) ? true : false;
+				console.log(towingJson);
+
 				statusCount++;
 
 				// Si on a reçu tous les status
@@ -129,6 +137,19 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 	}
 
 
+	var replaceExistingCar = function(cars, car){
+		var deferred = $q.defer();
+		cars.some(function(c, i) {
+			if (c.id == car.id){
+				cars[i] = car;
+			}
+		})
+
+		deferred.resolve(cars);
+		return deferred.promise;
+	}
+
+
 	var defaultCar = function(){
 		return {
 	        "id": "",
@@ -140,14 +161,19 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 	}
 
 
-	var save = function(car, onSucessCallback){
+	var save = function(car){
+		var deferred = $q.defer();
+
+
 		var index = removeById(car.id);
 		var cars = getAll();
 		cars.splice(index, 0, car);
 		empty();
 		localStorageService.set("cars", cars);
 
-		onSucessCallback();
+		deferred.resolve(car);
+
+		return deferred.promise;
 	}
 
 
@@ -178,7 +204,8 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 		save : save,
 		removeById : removeById,
 		create : create,
-		requestTowingStatuses : requestTowingStatuses
+		requestTowingStatuses : requestTowingStatuses,
+		replaceExistingCar : replaceExistingCar
 	}
 }])
 
