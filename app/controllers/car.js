@@ -52,7 +52,9 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarModel', 'ViewMana
     if (event.data.action == "refershCarById"){
       var car = CarModel.getById(event.data.carId);
       CarModel.replaceExistingCar($scope.cars, car).then(function(cars){
-        $scope.apply();
+        CarModel.updateCarTowingStatus($scope.cars, car).then(function(cars){
+
+        })
       });
     }
   }
@@ -79,12 +81,36 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarModel', 'ViewMana
     });  
     webView.preload();
 
+    // Preload towing view
+    webView = new steroids.views.WebView({
+      location: "http://localhost/views/towing/show.html/",
+      id: "showTowing"
+    });  
+    webView.preload();
+
     // Preload configuration view
     webView = new steroids.views.WebView({
       location: "http://localhost/views/configuration/index.html/",
       id: "configuration"
     });  
     webView.preload();
+
+    // Preload newMessage view
+    webView = new steroids.views.WebView({
+      location: "http://localhost/views/message/new.html/",
+      id: "newMessage"
+    });  
+    webView.preload();
+
+    // Preload contactMethods view
+    webView = new steroids.views.WebView({
+      location: "http://localhost/views/message/methods.html/",
+      id: "contactMethods"
+    });  
+    webView.preload();
+
+
+
     
 
     console.log(steroids.getApplicationState({},{
@@ -105,15 +131,14 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarModel', 'ViewMana
 
 // Show: http://localhost/views/car/show.html?id=<id>
 carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter', 'ViewManager', '$route', '$routeParams', '$location', '$cordovaDialogs', '$cordovaToast', 'CameraManager', 'Helpers', function (UIInitializer, $scope, CarModel, $filter, ViewManager, $route, $routeParams, $location, $cordovaDialogs, $cordovaToast, CameraManager, Helpers) {
-  
-
-  // empty the car ojbect
-  // $scope.car = {imageURL : "/images/sample.jpg"};
 
   // A new car has been requested
   this.messageReceived = function(event) {
     if (event.data.recipient == "ShowCtrl"){
       $scope.car = CarModel.getById(event.data.carId);
+      $scope.car.towed = CarModel.isTowed($scope.car);
+      
+      $scope.towing = $scope.car.towings[$scope.car.towings.length - 1];
 
       // set navigation bar
       UIInitializer.initNavigationBar($scope.car.name);
@@ -123,10 +148,8 @@ carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter',
 
     } 
   }
-
   window.addEventListener("message", this.messageReceived);
 
-  
 
 
   // L'utilisateur a demandé la suppression d'un véhicule
@@ -166,6 +189,14 @@ carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter',
         action: "refershCarById",
         carId : car.id
       });
+    });
+  }
+
+  $scope.showTowing = function(){
+    ViewManager.goToLoadedView("http://localhost/views/towing/show.html/", "showTowing");
+    window.postMessage({
+      recipient: "TowingShowCtrl",
+      car: $scope.car
     });
   }
 

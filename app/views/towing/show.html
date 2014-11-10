@@ -1,4 +1,56 @@
-<div ng-controller="ShowCtrl" class="padding">
-  <h2>{{towing.name}}</h2>
-  <p>{{towing.description}}</p>
+<div ng-controller="ShowCtrl" class="padding show-towing">
+	<div class="card">
+		<div class="item item-divider">
+	      	{{towing.remorquage.dateRemorquage.date.mois}}/{{towing.remorquage.dateRemorquage.date.jour}}/{{towing.remorquage.dateRemorquage.date.annee}}
+
+	      	à 
+	      	
+	      	{{towing.remorquage.dateRemorquage.heure.heureHre}}:{{towing.remorquage.dateRemorquage.heure.heureMin}}
+		</div>
+		<div class="item item-text-wrap" ng-model="towing">
+
+
+			<div class="list">
+
+			    <a class="item item-avatar tow-origin" href="#">
+			      <img src="/icons/tow.png">
+			      <h2>Lieu de l'enlèvement</h2>
+			      <p>
+			      	{{towing.remorquage.lieuEnlevement.rueEnlev.nom.type}}
+			      	{{towing.remorquage.lieuEnlevement.rueEnlev.nom.nom}}
+			      	{{towing.remorquage.lieuEnlevement.rueEnlev.orient}}
+			      </p>
+			    </a>
+
+
+			    <a class="item item-avatar way-dash">
+			    	<div class="dash"></div>
+			    </a>
+
+
+  			    <a class="item item-avatar tow-destination" href="#">
+			      <i class="icon ion-android-location"></i>
+			      <h2>Lieu de dépôt</h2>
+			      <p>
+			      	{{towing.remorquage.lieuRemorquage.rueRemorq.noCivique}}
+			      	{{towing.remorquage.lieuRemorquage.rueRemorq.nom.type}}
+			      	{{towing.remorquage.lieuRemorquage.rueRemorq.nom.nom}}
+			      </p>
+			    </a>
+
+			</div>
+		</div>
+
+		<div class="item item-divider">
+			<button ng-click="openDirections()" class="button button-block icon-right ion-map">
+				S'y rendre
+			</button>
+		</div>
+	</div>
+
+	<div class="padding">
+		<a ng-click="showContactMethodsModal()" >Votre voiture a-t-elle été endommagée lors du remorquage ?</a>
+	</div>
+
 </div>
+

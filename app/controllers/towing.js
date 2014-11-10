@@ -1,4 +1,4 @@
-var towingApp = angular.module('towingApp', ['TowingModel', 'ngTouch']);
+var towingApp = angular.module('towingApp', ['ngTouch', 'ionic', 'TowingModelApp', 'mainApp', 'steroidsBridge', 'CarModelApp']);
 
 
 // Index: http://localhost/views/towing/index.html
@@ -23,18 +23,44 @@ towingApp.controller('IndexCtrl', function ($scope, TowingRestangular) {
 });
 
 
-// Show: http://localhost/views/towing/show.html?id=<id>
+towingApp.controller('ShowCtrl', ['$scope', '$filter', 'CarModel', 'TowingModel', 'UIInitializer', 'Helpers', function ($scope, $filter, CarModel, TowingModel, UIInitializer, Helpers) {
 
-towingApp.controller('ShowCtrl', function ($scope, $filter, TowingRestangular) {
+  // A new towing has been requested
+  this.messageReceived = function(event) {
+    if (event.data.recipient == "TowingShowCtrl"){
+      $scope.car = event.data.car;
+      $scope.towing = $scope.car.towings[$scope.car.towings.length - 1];
 
-  // Fetch all objects from the local JSON (see app/models/towing.js)
-  TowingRestangular.all('towing').getList().then( function(towings) {
-    // Then select the one based on the view's id query parameter
-    $scope.towing = $filter('filter')(towings, {id: steroids.view.params['id']})[0];
-  });
+      // set navigation bar
+      UIInitializer.initNavigationBar("Remorquage");
+      UIInitializer.initNavigationMenuButton();
 
-  // Native navigation
-  steroids.view.navigationBar.show("Towing: " + steroids.view.params.id );
-  steroids.view.setBackgroundColor("#FFFFFF");
+      $scope.$apply();
 
-});
+    } 
+  }
+  window.addEventListener("message", this.messageReceived);
+
+
+  $scope.openDirections = function(){
+    var address = $scope.towing.remorquage.lieuRemorquage.rueRemorq.noCivique + " " + $scope.towing.remorquage.lieuRemorquage.rueRemorq.nom.type + " " + $scope.towing.remorquage.lieuRemorquage.rueRemorq.nom.nom + ", Montréal"
+    if(device.platform == "Android"){
+      launchnavigator.navigateByPlaceName(address);
+    }else if(device.platform == "iOS"){
+      window.location = "maps:q="+address; //might need to encode URL ?
+    }else{
+      console.error("Unknown platform");
+    }
+  };
+
+
+
+  $scope.goContactMethods = function(){
+    ViewManager.goToLoadedView("http://localhost/views/message/methods.html/", "contactMethods");
+    window.postMessage({
+      recipient: "MessageMethodsCtrl",
+      car : $scope.car
+    });
+  }
+
+}]);

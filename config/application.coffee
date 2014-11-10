@@ -1,20 +1,22 @@
 # For an explanation of the steroids.config properties, see the guide at
 # http://guides.appgyver.com/steroids/guides/project_configuration/config-application-coffee/
 
-steroids.config.name = "inforemorquage-steroids"
+steroids.config.name = "blank"
 
 # ## Start Location
-steroids.config.location = "http://localhost/views/car/index.html"
+steroids.config.location = "http://localhost/index.html"
 
 # ## Tab Bar
 # steroids.config.tabBar.enabled = true
 # steroids.config.tabBar.tabs = [
 #   {
+#     id: "index"
 #     title: "Index"
 #     icon: "icons/pill@2x.png"
 #     location: "http://localhost/index.html"
 #   },
 #   {
+#     id: "internet"
 #     title: "Internet"
 #     icon: "icons/telescope@2x.png"
 #     location: "http://www.google.com"
@@ -22,23 +24,32 @@ steroids.config.location = "http://localhost/views/car/index.html"
 # ]
 
 # ## Preloads
-steroids.config.preloads = []
-
+# steroids.config.preloads = [
+#   {
+#     id: "google"
+#     location: "http://www.google.com"
+#   }
+# ]
 
 # ## Drawers
-steroids.config.drawers =
-  right:
-    id: "menuDrawer"
-    location: "http://localhost/views/menuDrawer/index.html"
-    showOnAppLoad: false
-    widthOfDrawerInPixels: 200
-  options:
-    centerViewInteractionMode: "Full"
-    closeGestures: ["PanNavBar", "PanCenterView", "TapCenterView"]
-    openGestures: ["PanNavBar", "PanCenterView"]
-    showShadow: true
-    stretchDrawer: true
-    widthOfLayerInPixels: 0
+# steroids.config.drawers =
+#   left:
+#     id: "leftDrawer"
+#     location: "http://localhost/leftDrawer.html"
+#     showOnAppLoad: true
+#     widthOfDrawerInPixels: 200
+#   right:
+#     id: "rightDrawer"
+#     location: "http://localhost/rightDrawer.html"
+#     showOnAppLoad: false
+#     widthOfDrawerInPixels: 200
+#   options:
+#     centerViewInteractionMode: "Full"
+#     closeGestures: ["PanNavBar", "PanCenterView", "TapCenterView"]
+#     openGestures: ["PanNavBar", "PanCenterView"]
+#     showShadow: true
+#     stretchDrawer: true
+#     widthOfLayerInPixels: 0
 
 # ## Initial View
 # steroids.config.initialView =
@@ -46,7 +57,7 @@ steroids.config.drawers =
 #   location: "http://localhost/initialView.html"
 
 # ## Android Loading Screen
-steroids.config.loadingScreen.tintColor = "#FF0000"
+steroids.config.loadingScreen.tintColor = "#262626"
 
 # ## iOS Status Bar
 steroids.config.statusBar.enabled = true

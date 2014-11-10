@@ -84,7 +84,6 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 				car.statusLoaded = true;
 
 				car.towed = (towingJson.remorquage.statutReponse == 0) ? true : false;
-				console.log(towingJson);
 
 				statusCount++;
 
@@ -96,6 +95,20 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 			})
 		});
 
+
+
+		return deferred.promise;
+	}
+
+
+	var requestTowingStatus = function(car){
+		var deferred = $q.defer();
+		car.statusLoaded = false;
+
+		requestTowingStatuses([car]).then(function(cars){
+			car = cars[0];
+			deferred.resolve(car);
+		});
 
 
 		return deferred.promise;
@@ -149,6 +162,25 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 		return deferred.promise;
 	}
 
+	var updateCarTowingStatus = function(cars, car){
+		var deferred = $q.defer();
+		
+		requestTowingStatus(car).then(function(car){
+			car.statusLoaded = true;
+
+			replaceExistingCar(cars, car).then(function(cars){
+				deferred.resolve(cars);
+			})
+		})
+
+		return deferred.promise;
+	}
+
+
+	var isTowed = function(car){
+		return (car.towings[car.towings.length - 1].remorquage.statutReponse == 0);
+	}
+
 
 	var defaultCar = function(){
 		return {
@@ -163,16 +195,16 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 
 	var save = function(car){
 		var deferred = $q.defer();
-
-
 		var index = removeById(car.id);
 		var cars = getAll();
+
+		car.statusLoaded = false;
 		cars.splice(index, 0, car);
 		empty();
 		localStorageService.set("cars", cars);
 
 		deferred.resolve(car);
-
+              
 		return deferred.promise;
 	}
 
@@ -205,7 +237,9 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 		removeById : removeById,
 		create : create,
 		requestTowingStatuses : requestTowingStatuses,
-		replaceExistingCar : replaceExistingCar
+		replaceExistingCar : replaceExistingCar,
+		updateCarTowingStatus : updateCarTowingStatus,
+		isTowed : isTowed
 	}
 }])
 

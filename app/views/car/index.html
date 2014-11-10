@@ -2,7 +2,7 @@
 
 
 <ion-list ng-controller="IndexCtrl" class="index-car">
-	<div ng-repeat="car in cars" ng-click="open(car.id)">
+	<div ng-repeat="car in cars" ng-click="open(car.id)" class="animate-repeat">
 		<ion-item class="item-stable item-thumbnail-left item-icon-right"
 			ng-click="toggleCar(car)"
 			ng-class="{active: isCarShown(car)}">

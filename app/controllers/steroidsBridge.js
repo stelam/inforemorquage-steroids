@@ -37,6 +37,7 @@ angular.module('steroidsBridge', ['ngCordova', 'LocalStorageModule'])
 
   }).factory('ViewManager', function(localStorageService){
     var transitionComplete = true;
+    localStorageService.set("lastLoadedViewId", "");
 
 
     var goToLoadedView = function (viewLocation, viewId){

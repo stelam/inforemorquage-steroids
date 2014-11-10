@@ -6,7 +6,8 @@
 
 
 body {background: white;}
-
+body.platform-ready {display: block;}
+body{display: none;}
 
 .square-img
 {
@@ -86,7 +87,7 @@ a.item-icon-right:after, button.item-icon-right:after, a.item-button-right:after
 	padding: 0px 5px;
 }
 
-.status {
+.index-car .status {
 	position: absolute;
 	z-index: 1;
 	top: 0px;
@@ -282,6 +283,10 @@ input.ng-valid.ng-dirty {
 .ng-hide-remove.ng-hide-remove-active.icon{
 	display: flex!important;
 }
+
+.ng-hide {display: none !important;}
+
+
 .ng-hide-remove.ng-hide-remove-active, .ng-hide-remove {
 	transition: all .5s;
 	display: block!important;
@@ -302,4 +307,57 @@ input.ng-valid.ng-dirty {
     0% { transform: scale(1); } 
     50% { transform: scale(1.2); } 
     100% { transform: scale(1); } 
+} 
+
+
+.tow-icon {max-width: 100%; height: auto;}
+
+
+.show-towing .dash {
+    position: absolute;
+    left: 34px;
+    height: 105px;
+    top: -20px;
+    z-index: 10;
+    border-left: dashed 3px #999;
+}
+.show-towing .way-dash {padding-left: 20px; overflow: visible}
+.show-towing .tow-destination i,
+.show-towing .tow-origin img {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    max-width: 40px;
+    max-height: 40px;
+    width: 100%;
+    border-radius: 4px;
+    top: 50%;
+    margin-top: -14px;
+    text-align: center;
+    opacity: 0.9;
+}
+.show-towing .tow-origin img{opacity: 0.7;}
+
+.show-towing .tow-destination i::before{font-size: 30px;}
+.show-towing .item-avatar p {margin-bottom: 0px;}
+
+.show-towing .item-avatar{border: none; background: none;}
+.show-towing .item-avatar::after{content: "";}
+
+
+
+@keyframes blink {  
+    0% { color: red; }
+    100% { color: black; }
+}
+@-webkit-keyframes blink {
+    0% { color: red; }
+    100% { color: black; }
+}
+.ion-alert-circled {
+    -webkit-animation: blink 0.5s linear infinite;
+    -moz-animation: blink 0.5s linear infinite;
+    -ms-animation: blink 0.5s linear infinite;
+    -o-animation: blink 0.5s linear infinite;
+    animation: blink 0.5s linear infinite;
 } 
