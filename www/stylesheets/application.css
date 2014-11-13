@@ -7,7 +7,7 @@
 
 body {background: white;}
 body.platform-ready {display: block;}
-body{display: none;}
+
 
 .square-img
 {
@@ -38,6 +38,23 @@ body{display: none;}
     margin: 0px;
 }
 
+.square-img-240{
+    height:240px;
+    overflow: hidden;
+    margin: 0px;
+}
+
+.square-img-240 img {
+    position:absolute;
+    left: -100%;
+    right: -100%;
+    top: -100%;
+    bottom: -100%;
+    margin: auto; 
+    min-height: 100%;
+    min-width: 100%;
+}
+
 .item.active, .item.activated, .item-complex.active .item-content, .item-complex.activated .item-content, .item .item-content.active, .item .item-content.activated {
 	border-color: #ccc;
 	background-color: #D9D9D9;
@@ -53,13 +70,21 @@ a.item-icon-right:after, button.item-icon-right:after, a.item-button-right:after
 	display: none !important;
 }
 
+
+
+.show-car.padding {padding: 0px;}
+.show-car .actions.padding {padding: 10px !important;}
 .show-car label {border: none;}
 .show-car input[type="text"] {border: 1px solid #ccc;}
 .show-car .actions,
 .show-car .status {margin-top: 20px; text-align: center}
+.show-car .actions {margin-top: 0px;}
+.show-car.new-car .actions {margin-top: 50px;}
 .show-car .row > div {width: 100%;}
 .show-car .actions .item,
 .show-car .actions button {margin-bottom: 10px; text-align: center; display: block; width: 100%;}
+img[src="/images/default.png"] {opacity: 0.2;}
+
 
 .index-car .status > div {position: absolute; top: 0px;}
 .index-car .item-thumbnail-left {min-height: 150px; padding-left: 0px;}
@@ -113,6 +138,11 @@ a.item-icon-right:after, button.item-icon-right:after, a.item-button-right:after
 	color: rgba(0,0,0,0.5) !important;
 }
 
+
+.status .icon.ion-alert-circled::before{
+    color: rgba(255, 0, 0, 0.7) !important;
+}
+
 .status .loading{
 	left: -16px;
 	background: none;
@@ -131,31 +161,54 @@ a.item-icon-right:after, button.item-icon-right:after, a.item-button-right:after
 	opacity: 0.9;
 }
 
+.show-car form > .row {padding :0px;}
 .index-car i.icon::before{
 	text-shadow: 0px 0px 9px rgba(255, 255, 255, 0.7);
 	color: rgba(255,255,255,.7);
 }
 
-
+.col-image {
+    position: absolute;
+    width: 100%;
+    height: 240px;
+    padding: 0px;
+    overflow: hidden;
+}
 .col-image > div {position: relative; }
 .col-image button {
-	opacity: 0.9;
-	position: absolute;
-	bottom: 0px;
-	width: 50%;
-	left: 0px;
+    opacity: 0.9;
+    position: absolute;
+    bottom: 109px;
+    width: 17%;
+    left: auto;
+    right: 17%;
 }
 .col-image button:last-child{
 	left: auto;
 	right: 0px;
 }
 
+.col-fields {height: 220px; padding: 0px;}
+.col-fields .list {
+    background: rgba(0,0,0,0.5);
+    padding: 10px;
+    width: 34%;
+    right: 0px;
+    margin: 0px;
+    position: absolute;
+}
+.col-fields label {padding :0px; color: white;}
+.col-fields .input-label {color: white;}
 
-input.ng-invalid.ng-dirty {
+
+input.ng-invalid.ng-dirty, 
+textarea.ng-invalid.ng-dirty{
 	background-color: #FA787E;
+
 }
 
-input.ng-valid.ng-dirty {
+input.ng-valid.ng-dirty,
+textarea.ng-valid.ng-dirty {
 	background-color: #78FA89;
 }
 
@@ -289,7 +342,7 @@ input.ng-valid.ng-dirty {
 
 .ng-hide-remove.ng-hide-remove-active, .ng-hide-remove {
 	transition: all .5s;
-	display: block!important;
+	/*display: block!important;*/
     -webkit-animation-duration: 0.5s; 
     animation-duration: 0.5s; 
     -webkit-animation-fill-mode: both; 
@@ -343,6 +396,9 @@ input.ng-valid.ng-dirty {
 
 .show-towing .item-avatar{border: none; background: none;}
 .show-towing .item-avatar::after{content: "";}
+
+
+.new-message textarea {height: 190px;}
 
 
 

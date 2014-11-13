@@ -1,8 +1,21 @@
-<div ng-controller="IndexCtrl">
-  <ul class="list">
-    <li class="item item-icon-right" ng-click="open(message.id)" ng-repeat="message in messages">
-      Message: {{ message.name }}
-      <i class="icon ion-ios7-arrow-right"></i>
-    </li>
-  </ul>
-</div>
+<form name="form" ng-controller="NewCtrl" class="padding new-message" novalidate>
+	<div class="list">
+		<label class="item item-input item-stacked-label">
+			<span class="input-label">Votre adresse courriel</span>
+			<input type="email" required ng-model="message.authorEmail" ng-maxlength="75" placeholder="">
+		</label>
+		<label class="item item-input item-stacked-label">
+			<span class="input-label">Votre message</span>
+			<textarea ng-model="message.body" required></textarea>
+		</label>
+	</div>
+
+
+	<button ng-click="requestSend()" ng-disabled="form.$invalid" class="button button-block icon-right ion-checkmark-circled">
+		Envoyer
+	</button>
+
+	<button ng-click="cancel()" class="button button-block icon-right ion-ios7-close-empty">
+		Annuler
+	</button>
+</form>

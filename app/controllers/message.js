@@ -1,4 +1,4 @@
-var messageApp = angular.module('messageApp', ['MessageModel', 'ngTouch']);
+var messageApp = angular.module('messageApp', ['ngTouch', 'TowingModelApp', 'mainApp', 'steroidsBridge', 'CarModelApp', 'ngCordova', 'MessageModelApp']);
 
 
 // Index: http://localhost/views/message/index.html
@@ -41,21 +41,92 @@ messageApp.controller('ShowCtrl', function ($scope, $filter, MessageRestangular)
 
 
 
-messageApp.controller('MessageMethodsCtrl', ['$scope', '$filter', 'CarModel', 'TowingModel', 'UIInitializer', 'Helpers', function ($scope, $filter, CarModel, TowingModel, UIInitializer, Helpers) {
+messageApp.controller('MethodsCtrl', ['$scope', '$filter', 'CarModel', 'TowingModel', 'UIInitializer', 'Helpers', 'ViewManager', function ($scope, $filter, CarModel, TowingModel, UIInitializer, Helpers, ViewManager) {
 
-  // A new towing has been requested
-  this.messageReceived = function(event) {
-    if (event.data.recipient == "MessageMethodsCtrl"){
-      $scope.car = event.data.car;
-      $scope.towing = $scope.car.towings[$scope.car.towings.length - 1];
+  // Using steroids.layers.on to communicate between views
+  // because postMessage() is currently bugged
+  // https://github.com/AppGyver/steroids/issues/619
+  steroids.layers.on('willchange', function(event) {
+    if (event.target.webview.location == "http://localhost/views/message/methods.html"){
 
       // set navigation bar
-      UIInitializer.initNavigationBar("Véhicule endommagé");
+      UIInitializer.initNavigationBar("");
       UIInitializer.initNavigationMenuButton();
 
-    } 
-  }
-  window.addEventListener("message", this.messageReceived);
+    }
+  });
+  
 
+
+  $scope.openMessageForm = function(){
+    ViewManager.goToLoadedView("message/new");
+  }
 
 }]);
+
+
+messageApp.controller('NewCtrl', ['$scope', '$filter', 'CarModel', 'TowingModel', 'UIInitializer', 'Helpers', 'ViewManager', 'ConnectionManager', 'MessageSender', function ($scope, $filter, CarModel, TowingModel, UIInitializer, Helpers, ViewManager, ConnectionManager, MessageSender) {
+  $scope.message = {
+    body : "Exemple de message",
+    authorEmail : "exemple@email.com"
+  };
+
+  // Using steroids.layers.on to communicate between views
+  // because postMessage() is currently bugged
+  // https://github.com/AppGyver/steroids/issues/619
+  steroids.layers.on('willchange', function(event) {
+    if (event.target.webview.location == "http://localhost/views/message/new.html"){
+
+      // set navigation bar
+      UIInitializer.initNavigationBar("");
+      UIInitializer.initNavigationMenuButton();
+
+    }
+  });
+
+  $scope.requestSend = function(){
+    $scope.form.$setPristine();
+    
+    if (ConnectionManager.isOnline()) {
+      MessageSender.send($scope.message);
+      steroids.layers.popAll();  
+    } else{
+      MessageSender.saveOffline($scope.message);
+      steroids.layers.popAll();  
+    }
+  }
+
+  $scope.cancel = function(){
+    steroids.layers.pop();
+  }
+
+}]);
+
+
+
+
+messageApp.factory("MessageSender", ['$cordovaToast', 'MessageModel', function($cordovaToast, MessageModel){
+  var factory = [];
+
+  factory.send = function(message){
+    $cordovaToast.showShortTop('Message envoyé. Nous vous répondrons dans les plus brefs délais.');
+  }
+
+  factory.saveOffline = function(message){
+    MessageModel.add(message);
+    $cordovaToast.showShortTop('Aucune connexion internet active. Le message a été sauvegardée et sera envoyé ultérieurement.');
+  }
+
+  factory.sendSavedMessages = function(){
+    messages = MessageModel.getAll();
+    if (messages.length > 0){
+      MessageModel.empty();
+      $cordovaToast.showShortTop('Une plainte précédemment sauvegardée (hors ligne) a été envoyée.');
+    }
+  }
+
+
+
+  return factory;
+
+}])

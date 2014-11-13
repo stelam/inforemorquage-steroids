@@ -7,9 +7,10 @@ angular.module('mainApp', ['ngTouch', 'steroidsBridge'])
 
   .service("drawerOpenPageService", function(ViewManager){
     this.messageReceived = function(event) {
+
       if (event.data.action == "openFromDrawer"){
         //steroids.layers.popAll();
-        ViewManager.goToLoadedView(event.data.viewLocation, event.data.viewId);
+        ViewManager.goToLoadedView(event.data.viewId);
       }
       else if (event.data.action == "popAll"){
         steroids.layers.popAll();

@@ -1,4 +1,4 @@
-var towingApp = angular.module('towingApp', ['ngTouch', 'ionic', 'TowingModelApp', 'mainApp', 'steroidsBridge', 'CarModelApp']);
+var towingApp = angular.module('towingApp', ['ngTouch', 'TowingModelApp', 'mainApp', 'steroidsBridge', 'CarModelApp']);
 
 
 // Index: http://localhost/views/towing/index.html
@@ -23,23 +23,27 @@ towingApp.controller('IndexCtrl', function ($scope, TowingRestangular) {
 });
 
 
-towingApp.controller('ShowCtrl', ['$scope', '$filter', 'CarModel', 'TowingModel', 'UIInitializer', 'Helpers', function ($scope, $filter, CarModel, TowingModel, UIInitializer, Helpers) {
+towingApp.controller('ShowCtrl', ['$scope', '$filter', 'CarModel', 'TowingModel', 'UIInitializer', 'Helpers', 'ViewManager', function ($scope, $filter, CarModel, TowingModel, UIInitializer, Helpers, ViewManager) {
 
-  // A new towing has been requested
-  this.messageReceived = function(event) {
-    if (event.data.recipient == "TowingShowCtrl"){
-      $scope.car = event.data.car;
-      $scope.towing = $scope.car.towings[$scope.car.towings.length - 1];
+
+  // Using steroids.layers.on to communicate between views
+  // because postMessage() is currently bugged
+  // https://github.com/AppGyver/steroids/issues/619
+  steroids.layers.on('willchange', function(event) {
+    if (event.target.webview.location == "http://localhost/views/towing/show.html"){
+
+      $scope.car = CarModel.getRequestedCar();
+      $scope.towing = TowingModel.getLatest($scope.car.towings);
 
       // set navigation bar
       UIInitializer.initNavigationBar("Remorquage");
       UIInitializer.initNavigationMenuButton();
 
       $scope.$apply();
+    }
+  });
+  
 
-    } 
-  }
-  window.addEventListener("message", this.messageReceived);
 
 
   $scope.openDirections = function(){
@@ -56,11 +60,17 @@ towingApp.controller('ShowCtrl', ['$scope', '$filter', 'CarModel', 'TowingModel'
 
 
   $scope.goContactMethods = function(){
-    ViewManager.goToLoadedView("http://localhost/views/message/methods.html/", "contactMethods");
+    ViewManager.goToLoadedView("message/methods");
     window.postMessage({
       recipient: "MessageMethodsCtrl",
       car : $scope.car
     });
   }
 
+
+
+
 }]);
+
+
+

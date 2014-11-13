@@ -2,19 +2,16 @@
   {
     "id": 1,
     "name": "Vos voitures",
-    "viewId": "dashboard",
-    "viewLocation": "http://localhost/views/car/index.html"
+    "viewId": "car/index"
   },
   {
     "id": 2,
     "name": "Ajouter un véhicule",
-    "viewId": "newCar",
-    "viewLocation": "http://localhost/views/car/new.html"
+    "viewId": "car/new"
   },
   {
     "id": 3,
     "name": "Configuration",
-    "viewId": "configuration",
-    "viewLocation": "http://localhost/views/configuration/index.html"
+    "viewId": "configuration/index"
   }
 ]

@@ -1,9 +1,7 @@
 
-
-
-<ion-list ng-controller="IndexCtrl" class="index-car">
-	<div ng-repeat="car in cars" ng-click="open(car.id)" class="animate-repeat">
-		<ion-item class="item-stable item-thumbnail-left item-icon-right"
+<div ng-controller="IndexCtrl" class="list index-car">
+	<div ng-repeat="car in cars" ng-click="open(car.id)" class="animate-repeat" id="car-{{car.id}}">
+		<div class="item item-stable item-thumbnail-left item-icon-right"
 			ng-click="toggleCar(car)"
 			ng-class="{active: isCarShown(car)}">
 			<div class="square-img-80">
@@ -28,9 +26,9 @@
 			<i class="icon ion-ios7-arrow-right"></i>
 
 
-		</ion-item>
+		</div>
 	</div>
-</ion-list>
+</div>
 
 <div class="padding" ng-controller="IndexCtrl">
 	<button ng-click="goAddNew()" class="add-new-button button button-block button-stable ion-plus-round">

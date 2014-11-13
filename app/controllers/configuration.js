@@ -1,9 +1,9 @@
-var configurationApp = angular.module('configurationApp', ['ConfigurationModel', 'mainApp', 'steroidsBridge', 'ionic', 'ngTouch', 'mainApp', 'ngRoute', 'ngCordova']);
+var configurationApp = angular.module('configurationApp', ['ConfigurationModel', 'mainApp', 'steroidsBridge', 'ngTouch', 'mainApp', 'ngRoute', 'ngCordova', 'CarModelApp']);
 
 
 // Index: http://localhost/views/configuration/index.html
 
-configurationApp.controller('IndexCtrl', ['$scope', 'ConfigurationRestangular', 'UIInitializer', function ($scope, ConfigurationRestangular, UIInitializer) {
+configurationApp.controller('IndexCtrl', ['$scope', 'ConfigurationRestangular', 'UIInitializer', 'CarModel', '$cordovaToast', function ($scope, ConfigurationRestangular, UIInitializer, CarModel, $cordovaToast) {
 
   // Helper function for opening new webviews
   $scope.open = function(id) {
@@ -25,6 +25,28 @@ configurationApp.controller('IndexCtrl', ['$scope', 'ConfigurationRestangular', 
     }
   }
   window.addEventListener("message", this.messageReceived);
+
+
+  $scope.generateCars = function(){
+    CarModel.initData();
+    $cordovaToast.showShortTop('Véhicules créés.');
+    window.postMessage({
+      action: "refreshCarsAndStatuses"
+    });
+    steroids.layers.popAll();
+  }
+
+  $scope.wipeCars = function(){
+    CarModel.empty().then(function(){
+      CarModel.unsetRequestedCar();
+      $cordovaToast.showShortTop('Tous les véhicules ont été supprimés.');
+      window.postMessage({
+        action: "refreshCarsAndStatuses"
+      });
+      steroids.layers.popAll();
+    })
+
+  }
 
 
 }]);

@@ -26,6 +26,8 @@ module.factory('TowingRestangular', function(Restangular) {
 
 module.factory('TowingModel', function(localStorageService, inforemorquageWebService, $q){
   var factory = [];
+
+
 	factory.requestStatus = function(registration){
     var deferred = $q.defer();
 
@@ -36,6 +38,25 @@ module.factory('TowingModel', function(localStorageService, inforemorquageWebSer
 		return deferred.promise;
 	}
 
+
+  factory.exists = function(towing, towings){
+    var exists = false;
+    towings.some(function(t){
+      if (JSON.stringify(towing) === JSON.stringify(t))
+        exists = true;
+    })
+    return exists;
+  }
+
+  factory.getLatest = function(towings){
+    var latest = false;
+    towings.some(function(t){
+      if (t.remorquage.statutReponse == 0)
+        latest = t;
+    })
+
+    return latest;
+  }
 
   return factory;
 

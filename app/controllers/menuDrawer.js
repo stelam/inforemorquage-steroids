@@ -29,7 +29,7 @@ menuDrawerApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'MenuDrawerRes
       
     }, {
       onSuccess: function(){
-        if (viewId == "dashboard"){
+        if (viewId == "car/index"){
           window.postMessage({
             action: "popAll",
             viewLocation: viewLocation,

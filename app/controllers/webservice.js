@@ -17,7 +17,7 @@ angular.module('webserviceApp', ['ngTouch'])
         deferred.resolve(
           $http.get(url.replace("//", "//" + corsProxyUrl))
         );
-      }, 3500);
+      }, 100);
 
 
       return deferred.promise;

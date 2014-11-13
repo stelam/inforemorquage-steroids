@@ -1,7 +1,12 @@
 <div ng-controller="IndexCtrl">
   <ul class="list">
-    <li class="item item-icon-right" ng-repeat="configuration in configurations">
-      Configuration: {{ configuration.name }}
+    <li class="item item-icon-right" ng-click="generateCars()">
+      Générer 5 voitures
+      <i class="icon ion-ios7-arrow-right"></i>
+    </li>
+
+    <li class="item item-icon-right" ng-click="wipeCars()">
+      Supprimer toutes les voitures
       <i class="icon ion-ios7-arrow-right"></i>
     </li>
   </ul>

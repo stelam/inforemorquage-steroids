@@ -26,31 +26,52 @@ angular.module('steroidsBridge', ['ngCordova', 'LocalStorageModule'])
           }
       });
 
-    };
+    }
 
 
+    var initDrawers = function(){
+      steroids.drawers.update({
+        options: {
+          showShadow: true,
+          stretchDrawer: true,
+          centerViewInteractionMode: "Full",
+          animation: steroids.drawers.defaultAnimations.PARALLAX,
+          openGestures: ["PanNavBar", "PanBezelCenterView"],
+          closeGestures: ["PanNavBar", "PanBezelCenterView", "TapCenterView"]
+        }
+      }, {
+        onSuccess: function() {
+          //steroids.logger.log("Drawer successfully updated!");
+        },
+        onFailure: function() {
+          //steroids.logger.log("Could not update drawer.");
+        }
+      });
+
+    }
 
     return {
       initNavigationBar: initNavigationBar,
-      initNavigationMenuButton: initNavigationMenuButton
+      initNavigationMenuButton: initNavigationMenuButton,
+      initDrawers : initDrawers
     };
 
   }).factory('ViewManager', function(localStorageService){
     var transitionComplete = true;
-    localStorageService.set("lastLoadedViewId", "");
+    localStorageService.set("lastLoadedViewLocation", "none");
+
+    // Sauvegarder la dernière vue demandée pour ne pas faire apparaître des
+    // vues en double
+    steroids.layers.on('willchange', function(event) {
+      localStorageService.set("lastLoadedViewLocation", event.target.webview.location);
+    });
 
 
-    var goToLoadedView = function (viewLocation, viewId){
+    var goToLoadedView = function (viewId){
 
+      viewLocation = "http://localhost/views/" + viewId + ".html";
 
-      if (localStorageService.get("lastLoadedViewId") != viewId){
-
-        // Sauvegarder la dernière vue demandée pour ne pas faire apparaître des
-        // vues en double
-        // Il va falloir mettre ça sur layers.on("change") quand ce callback
-        // sera disopnible via Steroids
-        localStorageService.set("lastLoadedViewId", viewId);
-
+      if (localStorageService.get("lastLoadedViewLocation").replace(/\/$/, "") != viewLocation.replace(/\/$/, "")){
 
         webView = new steroids.views.WebView({
           location: viewLocation,
@@ -60,24 +81,36 @@ angular.module('steroidsBridge', ['ngCordova', 'LocalStorageModule'])
         // Ne pas charger une vue avant que la transition soit terminée
         if (transitionComplete){
           transitionComplete = false;
-          steroids.layers.push({view:webView},{onSuccess:function(){transitionComplete = true}, onFailure:function(error){console.log(error)}}); 
+          steroids.layers.push({view:webView},{onSuccess:function(){transitionComplete = true;}, onFailure:function(error){console.log(error)}}); 
         }
       }
 
     };
 
-    var goHome = function (){
-      localStorageService.set("lastLoadedViewId", viewId);
-      this.goToLoadedView("/views/car/index.html", "dashboard");
+
+
+    var preloadViews = function(views) {
+      views.some(function(v, i) {
+        preloadView(v);
+      });
+    };
+
+    var preloadView = function(viewId){
+      viewLocation = "http://localhost/views/" + viewId + ".html";
+      webView = new steroids.views.WebView({
+        location: viewLocation,
+        id: viewId
+      });  
+      webView.preload();
     }
 
 
     return {
       goToLoadedView: goToLoadedView,
-      goHome: goHome,
+      preloadViews: preloadViews
     }
 
-  }).factory('CameraManager', ['$cordovaCamera', 'Helpers', function($cordovaCamera, Helpers){
+  }).factory('CameraManager', ['$cordovaCamera', 'Helpers', '$timeout', function($cordovaCamera, Helpers, $timeout){
 
 
     var takePicture = function(callback){
@@ -114,27 +147,35 @@ angular.module('steroidsBridge', ['ngCordova', 'LocalStorageModule'])
       Helpers.cordovaCallbackFix("Photo");
 
       navigator.camera.getPicture(gotPicture, fileError, options);
-
+      //Helpers.cordovaCallbackFix("saveImage")
       function gotPicture(imageURI){
         // Move the file
-        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fileSys) {
-          window.resolveLocalFileSystemURL(imageURI, function(file) {
-            var d = new Date();
-            var n = d.getTime();
-            var e = ".jpg";
-            var fileName = n + e;
+        //Helpers.cordovaCallbackFix("beforeTimeout")
+        $timeout(function(){
+          //Helpers.cordovaCallbackFix("aftertimeout")
+          window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fileSys) {
+            //Helpers.cordovaCallbackFix("request")
+            window.resolveLocalFileSystemURL(imageURI, function(file) {
+              var d = new Date();
+              var n = d.getTime();
+              var e = ".jpg";
+              var fileName = n + e;
 
-            var targetDirURI = "file://" + steroids.app.absoluteUserFilesPath;
+              var targetDirURI = "file://" + steroids.app.absoluteUserFilesPath;
 
-            fileSys.root.getDirectory(steroids.app.absoluteUserFilesPath, {create: true}, function(dir) {
-              window.resolveLocalFileSystemURL(targetDirURI, function(directory) {
-                file.moveTo(directory, fileName, function(movedFile){
-                  callback("/" + movedFile.name);
+              fileSys.root.getDirectory(steroids.app.absoluteUserFilesPath, {create: true}, function(dir) {
+                //Helpers.cordovaCallbackFix("createDirectory")
+                window.resolveLocalFileSystemURL(targetDirURI, function(directory) {
+                  //Helpers.cordovaCallbackFix("resolveDir")
+                  file.moveTo(directory, fileName, function(movedFile){
+                    //Helpers.cordovaCallbackFix("moveFile")
+                    callback("/" + movedFile.name);
+                  }, fileError);
                 }, fileError);
-              }, fileError);
-            })
+              })
+            });
           });
-        });
+        }, 350);
       }
 
       function fileError(error){
@@ -165,7 +206,37 @@ angular.module('steroidsBridge', ['ngCordova', 'LocalStorageModule'])
     return {
       cordovaCallbackFix : cordovaCallbackFix
     }
+
+
+  }).factory("ConnectionManager", function(localStorageService){
+
+    var online = false;
+
+    var onOffline = function() {
+      localStorageService.set("online", false);
+      online = false;
+    }
+
+    var onOnline = function(){
+      localStorageService.set("online", true);
+      window.postMessage({
+        action: "appBackOnline"
+      });
+    }
+
+
+    var isOnline = function(){
+      return localStorageService.get("online");
+    }
+
+    document.addEventListener("offline", onOffline, false);
+    document.addEventListener("online", onOnline, false);
+
+
+    return {
+      online: online,
+      isOnline: isOnline
+    }
+
+
   })
-
-
-
