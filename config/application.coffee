@@ -47,7 +47,6 @@ steroids.config.preloads = [
     id: "message/new"
     location: "http://localhost/views/message/new.html"
   }
-
 ]
 
 

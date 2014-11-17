@@ -3,7 +3,9 @@ var configurationApp = angular.module('configurationApp', ['ConfigurationModel',
 
 // Index: http://localhost/views/configuration/index.html
 
-configurationApp.controller('IndexCtrl', ['$scope', 'ConfigurationRestangular', 'UIInitializer', 'CarModel', '$cordovaToast', function ($scope, ConfigurationRestangular, UIInitializer, CarModel, $cordovaToast) {
+configurationApp.controller('IndexCtrl', ['$scope', 'ConfigurationRestangular', 'UIInitializer', 'CarModel', '$cordovaToast', 'ViewManager', function ($scope, ConfigurationRestangular, UIInitializer, CarModel, $cordovaToast, ViewManager) {
+
+  $scope.generateCars = {amount : 5}
 
   // Helper function for opening new webviews
   $scope.open = function(id) {
@@ -28,13 +30,16 @@ configurationApp.controller('IndexCtrl', ['$scope', 'ConfigurationRestangular', 
 
 
   $scope.generateCars = function(){
-    CarModel.initData();
+    CarModel.generateCars($scope.generateCars.amount);
     $cordovaToast.showShortTop('Véhicules créés.');
     window.postMessage({
       action: "refreshCarsAndStatuses"
     });
+
     steroids.layers.popAll();
   }
+
+
 
   $scope.wipeCars = function(){
     CarModel.empty().then(function(){
@@ -42,6 +47,9 @@ configurationApp.controller('IndexCtrl', ['$scope', 'ConfigurationRestangular', 
       $cordovaToast.showShortTop('Tous les véhicules ont été supprimés.');
       window.postMessage({
         action: "refreshCarsAndStatuses"
+      });
+      window.postMessage({
+        action: "applyScope"
       });
       steroids.layers.popAll();
     })

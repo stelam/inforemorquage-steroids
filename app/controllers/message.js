@@ -114,14 +114,14 @@ messageApp.factory("MessageSender", ['$cordovaToast', 'MessageModel', function($
 
   factory.saveOffline = function(message){
     MessageModel.add(message);
-    $cordovaToast.showShortTop('Aucune connexion internet active. Le message a été sauvegardée et sera envoyé ultérieurement.');
+    $cordovaToast.showLongTop('Aucune connexion internet active. Le message a été sauvegardée et sera envoyé ultérieurement.');
   }
 
   factory.sendSavedMessages = function(){
     messages = MessageModel.getAll();
     if (messages.length > 0){
       MessageModel.empty();
-      $cordovaToast.showShortTop('Une plainte précédemment sauvegardée (hors ligne) a été envoyée.');
+      $cordovaToast.showLongTop('Une plainte précédemment sauvegardée (hors ligne) a été envoyée.');
     }
   }
 

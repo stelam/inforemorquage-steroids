@@ -30,7 +30,7 @@
 		var factory = [];
 
 		factory.getAll = function(){
-			factory.empty();
+			//factory.empty();
 			var messages = localStorageService.get("messages");
 			if (!messages || messages == {}) {messages = []}
 			return messages;

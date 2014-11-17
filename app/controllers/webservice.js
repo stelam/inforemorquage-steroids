@@ -14,9 +14,18 @@ angular.module('webserviceApp', ['ngTouch'])
       var corsProxyUrl = "www.corsproxy.com/";
 
       $timeout(function(){
-        deferred.resolve(
-          $http.get(url.replace("//", "//" + corsProxyUrl))
-        );
+        var xml;
+        $http.get(url.replace("//", "//" + corsProxyUrl)).
+
+        success(function(data, status, headers, config){
+          deferred.resolve(data);
+        }).
+
+        error(function(data, status, headers, config) {
+          // perhaps we should use interceptors
+          deferred.reject(status);
+        });
+
       }, 100);
 
 
@@ -28,7 +37,9 @@ angular.module('webserviceApp', ['ngTouch'])
 
       factory.getXml(url).then(function(xmlObject){
         var x2js = new X2JS();
-        deferred.resolve(x2js.xml_str2json(xmlObject.data));
+        deferred.resolve(x2js.xml_str2json(xmlObject));
+      }, function(error){
+        deferred.reject(error);
       })
 
       return deferred.promise;
@@ -47,6 +58,8 @@ angular.module('webserviceApp', ['ngTouch'])
 
       requestFactory.getJsonFromXml(url).then(function(towingJson){
         deferred.resolve(towingJson)
+      }, function(error){
+        deferred.reject(error);
       })
 
       return deferred.promise;

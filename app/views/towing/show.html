@@ -35,6 +35,10 @@
 			      	{{towing.remorquage.lieuRemorquage.rueRemorq.noCivique}}
 			      	{{towing.remorquage.lieuRemorquage.rueRemorq.nom.type}}
 			      	{{towing.remorquage.lieuRemorquage.rueRemorq.nom.nom}}
+			      	
+			      	{{towing.remorquage.lieuRemorquage.interRemorq.precision}}
+			      	{{towing.remorquage.lieuRemorquage.interRemorq.nom.type}}
+			      	{{towing.remorquage.lieuRemorquage.interRemorq.nom.nom}}
 			      </p>
 			    </a>
 
@@ -48,9 +52,11 @@
 		</div>
 	</div>
 
-	<div class="padding">
-		<a ng-click="goContactMethods()" >Votre voiture a-t-elle été endommagée lors du remorquage ?</a>
-	</div>
 
+	<div class="card" ng-click="goContactMethods()">
+	  <div class="item item-text-wrap">
+	    Votre voiture a-t-elle été endommagée lors du remorquage ?
+	  </div>
+	</div>
 </div>
 

@@ -33,6 +33,8 @@ module.factory('TowingModel', function(localStorageService, inforemorquageWebSer
 
     inforemorquageWebService.getTowingJsonByRegistration(registration).then(function(towingJson){
       deferred.resolve(towingJson);
+    }, function(error){
+      deferred.reject(error);
     })
 
 		return deferred.promise;
@@ -42,7 +44,7 @@ module.factory('TowingModel', function(localStorageService, inforemorquageWebSer
   factory.exists = function(towing, towings){
     var exists = false;
     towings.some(function(t){
-      if (JSON.stringify(towing) === JSON.stringify(t))
+      if (JSON.stringify(towing) === JSON.stringify(t) || towing == null)
         exists = true;
     })
     return exists;
@@ -56,6 +58,26 @@ module.factory('TowingModel', function(localStorageService, inforemorquageWebSer
     })
 
     return latest;
+  }
+
+  factory.getDateObject = function(towing){
+    console.log(towing);
+    var jsonDate = towing.remorquage.dateRemorquage.date;
+    return new Date(jsonDate.annee + "-" + jsonDate.mois + "-" + jsonDate.jour);
+  }
+
+  factory.isInElligiblePeriod = function(towing){
+    if (towing.remorquage.statutReponse == 1)
+      return false;
+
+    var maxPastDate = new Date();
+    maxPastDate = addMonths(maxPastDate, -9);
+    function addMonths(date, months) {
+        date.setMonth(date.getMonth() + months);
+        return date;
+    }
+
+    return factory.getDateObject(towing) > maxPastDate;
   }
 
   return factory;

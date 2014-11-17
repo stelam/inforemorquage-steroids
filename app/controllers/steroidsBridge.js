@@ -208,35 +208,64 @@ angular.module('steroidsBridge', ['ngCordova', 'LocalStorageModule'])
     }
 
 
-  }).factory("ConnectionManager", function(localStorageService){
+  }).factory("ConnectionManager", function(localStorageService, $rootScope, $timeout){
 
-    var online = false;
+    localStorageService.set("online", "");
+    var connectionManager = [];
+    var offlineFnCallBuffer = false;
+    var onlineFnCallBuffer = false;
 
-    var onOffline = function() {
-      localStorageService.set("online", false);
-      online = false;
+
+
+    connectionManager.onOffline = function() {
+      if (localStorageService.get("online") != false && !offlineFnCallBuffer) { 
+        offlineFnCallBuffer = true;
+        localStorageService.set("online", false);
+        $rootScope.$broadcast('online', false);
+
+        $timeout(function(){
+          offlineFnCallBuffer = false;
+        }, 500)
+
+      }
     }
 
-    var onOnline = function(){
-      localStorageService.set("online", true);
-      window.postMessage({
-        action: "appBackOnline"
-      });
+    connectionManager.onOnline = function(){
+      if (localStorageService.get("online") != true && !onlineFnCallBuffer) {
+        onlineFnCallBuffer = true;
+        $rootScope.$broadcast('online', true); 
+        localStorageService.set("online", true);
+
+        $timeout(function(){
+          onlineFnCallBuffer = false;
+        }, 500)
+
+      }
     }
 
 
-    var isOnline = function(){
-      return localStorageService.get("online");
+    connectionManager.isOnline = function(){
+      return (localStorageService.get("online") == "true") ? true : false;
     }
 
-    document.addEventListener("offline", onOffline, false);
-    document.addEventListener("online", onOnline, false);
 
 
-    return {
-      online: online,
-      isOnline: isOnline
+    connectionManager.addEventListeners = function(){
+      document.addEventListener("offline", connectionManager.onOffline, false);
+      document.addEventListener("online", connectionManager.onOnline, false);
     }
+
+
+
+    connectionManager.removeEventListeners = function(){
+      document.removeEventListener("offline", connectionManager.onOffline, false);
+      document.removeEventListener("online", connectionManager.onOnline, false); 
+    }
+
+
+    connectionManager.addEventListeners();
+
+    return connectionManager;
 
 
   })

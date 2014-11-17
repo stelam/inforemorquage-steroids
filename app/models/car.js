@@ -8,7 +8,7 @@ if ( typeof angular == 'undefined' ) {
 };
 
 
-var module = angular.module('CarModelApp', ['restangular', 'LocalStorageModule', 'TowingModelApp']);
+var module = angular.module('CarModelApp', ['restangular', 'LocalStorageModule', 'TowingModelApp', 'steroidsBridge', 'ngCordova']);
 
 module.factory('CarRestangular', function(Restangular) {
 
@@ -25,55 +25,90 @@ module.factory('CarRestangular', function(Restangular) {
 });
 
 
-module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function(localStorageService, TowingModel, $q){
-	var initData = function(){
+module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', 'ConnectionManager', '$cordovaToast', function(localStorageService, TowingModel, $q, ConnectionManager, $cordovaToast){
+	var generateCars = function(){
 
 		var startingId = parseInt(getResumingId());
 
-	    var data = [
-	      {
-	        "id": startingId,
-	        "name": "Voiture - " + parseInt(startingId),
-	        "registration": "ABC123",
-	        "imageURL" : "/images/sample-02.jpg",
-	        "towings" : [{remorquage : {}}],
-	        "statusLoaded" : false,
-	        "towed" : false
-	      },
-	      {
-	        "id": parseInt(startingId + 1),
-	        "name": "Voiture - " + parseInt(startingId + 1),
-	        "registration": "H1Z2Z1",
-	        "imageURL" : "/images/sample-03.jpg",
-	        "towings" : [{remorquage : {}}],
-	        "statusLoaded" : false,
-	        "towed" : false
-	      },
-	      {
-	        "id": parseInt(startingId + 2),
-	        "name": "Voiture - " + parseInt(startingId + 2),
-	        "registration": "H1Z2Z1",
-	        "imageURL" : "/images/sample-04.jpg",
-	        "towings" : [{remorquage : {}}],
-	        "statusLoaded" : false,
-	        "towed" : false
-	      },
-	      {
-	        "id": parseInt(startingId + 3),
-	        "name": "Voiture - " + parseInt(startingId + 3),
-	        "registration": "H1Z2Z1",
-	        "imageURL" : "/images/sample-05.jpg",
-	        "towings" : [{remorquage : {}}],
-	        "statusLoaded" : false,
-	        "towed" : false
-	      }
-	    ];
+		var names = [          
+			"Suzuki Optimistic",
+            "Chrysler Overwhelmed",
+            "Mercury Undesirable",
+            "Ferrari Economic",
+            "Mitsubishi Snuggled",
+            "GMC Unusual",
+            "Suzuki Lackadaisical",
+            "Nissan Absent-Minded",
+            "GM Endearing",
+            "Eagle Aberrant",
+            "Hyundai Recondite"
+        ];
+
+        var regs = [
+            "326GVC",
+            "M25BFZ",
+            "191SAQ",
+            "151FXJ",
+            "S63AVB",
+            "P01BLJ",
+            "H36CSA",
+            "Z13EZG",
+            "715ZAV",
+            "068LWZ",
+            "W50AXJ",
+            "263VQJ",
+            "303XXA",
+            "KFX935"
+        ];
+
+        var data = [];
+        var r1 = [];
+        var r2 = [];
+        var r3 = [];
+        for (var i = 0; i < 5; i++) {
+
+			function uniqueRandoms(max, indexArray){
+				var r = Math.floor(Math.random() * max);
+				var found = false;
+				for(var j=0;j<indexArray.length;j++){
+					if (indexArray[j] == r){
+						found = true;
+						break;
+					}
+				}
+				if (found == true)
+					return uniqueRandoms(max, indexArray);
+				else {
+					indexArray.push(r);
+					return r;
+				}
+			}
+
+            var randomIndex = uniqueRandoms(10, r1);
+            var randomIndex2 = uniqueRandoms(10, r2);
+            var randomIndex3 = uniqueRandoms(11, r3) + 1;
+            var thisPhotoFileName = (randomIndex3 < 10) ? "sample-0" + randomIndex3 + ".jpg" : "sample-" + randomIndex3 + ".jpg";
+
+
+
+
+            var car = {
+            	id: startingId + i,
+            	name: names[randomIndex2],
+            	registration: regs[randomIndex],
+            	imageURL: "/images/" + thisPhotoFileName,
+            	towings: [{remorquage : {}}],
+            	statusLoaded: false,
+            	towed: false
+            };
+            data.push(car);
+        }
+
 
 	    data.some(function(car) {
 	    	save(car);
 	    })
 
-	    // localStorageService.set("cars", data);
 	    return getAll();
 	}
 
@@ -110,6 +145,9 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 					// saveAll(cars);
 					deferred.resolve(cars);
 				}
+			}, function(error){
+				statusCount++;
+				deferred.reject(error);
 			})
 		});
 
@@ -120,31 +158,42 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 	var requestTowingStatus = function(car){
 		var deferred = $q.defer();
 		car.statusLoaded = false;
+		if (ConnectionManager.isOnline()){
+			TowingModel.requestStatus(car.registration).then(function(towingJson){
+
+				// Check if the towing had already been saved for this car
+				// if not, save it
+				if (!TowingModel.exists(towingJson, car.towings)){
+					car.towings.push(towingJson);
+				}
+
+				car.towed = isTowed(car);
 
 
-		TowingModel.requestStatus(car.registration).then(function(towingJson){
+				// If the car still exists after its status has been fetched
+				if (getById(car.id)){
+					save(car).then(function(car){
+						car.statusLoaded = true;
+						deferred.resolve(car);	
+					})
+				}
 
-			// Check if the towing had already been saved for this car
-			// if not, save it
-			if (!TowingModel.exists(towingJson, car.towings)){
-				car.towings.push(towingJson);
-			}
+			}, function(error){
+		        //$cordovaToast.showShortCenter('Impossible de se connecter au serveur. Veuillez vérifier votre connexion et réessayer.');
+		        car.towed = null;
+		        car.statusLoaded = true;
+		        deferred.reject("Network error");
+			})
 
-			car.towed = (towingJson.remorquage.statutReponse == 0) ? true : false;
+			
+		}else {
+	        //$cordovaToast.showShortCenter('Impossible de se connecter au serveur. Veuillez vérifier votre connexion et réessayer.');
+	        car.towed = null;
+	        car.statusLoaded = true;
+	        deferred.reject("Network error");
+		}
 
-
-			// If the car still exists after its status has been fetched
-			if (getById(car.id)){
-				save(car).then(function(car){
-					car.statusLoaded = true;
-					deferred.resolve(car);	
-				})
-			}
-
-		})
-
-
-		return deferred.promise;
+		return deferred.promise
 	}
 
 
@@ -189,7 +238,7 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 
 	var syncCarsWithLocalStorage = function(cars){
 		var deferred = $q.defer();
-		var carToRemoveIndex = false;
+		var carToRemoveIndex = -1;
 		var savedCars = getAll();
 
 		cars.some(function(car, i){
@@ -212,7 +261,7 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 			}
 		})
 
-		if (carToRemoveIndex != false){
+		if (carToRemoveIndex >= 0){
 			cars.splice(carToRemoveIndex, 1);
 		}
 
@@ -260,6 +309,8 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 			replaceExistingCar(cars, car).then(function(cars){
 				deferred.resolve(cars);
 			})
+		}, function(error){
+			deferred.reject(error);
 		})
 
 		return deferred.promise;
@@ -269,6 +320,8 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 	var isTowed = function(car){
 		if (car == null || typeof car == "undefined" || getLatestTowing(car) == false)
 			return false;
+		else if (!ConnectionManager.isOnline())
+			return null;
 		else
 			return (getLatestTowing(car).remorquage.statutReponse == 0);
 	}
@@ -276,11 +329,15 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 	var getLatestTowing = function(car){
 		var elligibleTowings = [];
 		car.towings.forEach(function(t){
-			if (t.remorquage.noPlaque == car.registration){
+			if (t.remorquage.noPlaque == car.registration && TowingModel.isInElligiblePeriod(t)){
 				elligibleTowings.push(t);
 			}
 		})
-		return TowingModel.getLatest(elligibleTowings);
+
+
+		var latest = TowingModel.getLatest(elligibleTowings);
+		return latest;
+
 	}
 
 
@@ -310,6 +367,9 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 		var index = removeById(car.id);
 		var cars = getAll();
 
+	    car.registration = car.registration.toUpperCase();
+	    car.registration = car.registration.replace(" ", "");
+
         unsetRequestedCar();
 		car.statusLoaded = false;
 		cars.splice(index, 0, car);
@@ -333,6 +393,8 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 
 		// On set un nouveau ID qui correspond au ID du dernier véhicule + 1
 		car.id = getResumingId();
+	    car.registration = car.registration.toUpperCase();
+	    car.registration = car.registration.replace(" ", "");
 
 		cars.push(car);
 		localStorageService.set("cars", cars);
@@ -341,8 +403,22 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 	}
 
 
+	var setTowedStatus = function(cars, towedStatus){
+		cars.some(function(c){
+			c.towed = towedStatus;
+		})
+	}
+
+	var setStatusLoaded = function(cars, status){
+		cars.some(function(c){
+			c.statusLoaded = status;
+		})
+	}
+
+
+
 	return {
-		initData : initData,
+		generateCars : generateCars,
 		empty : empty,
 		getAll : getAll,
 		getById : getById,
@@ -359,7 +435,9 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', function
 		setRequestedCar : setRequestedCar,
 		syncCarsWithLocalStorage : syncCarsWithLocalStorage,
 		unsetRequestedCar : unsetRequestedCar,
-		getLatestTowing : getLatestTowing
+		getLatestTowing : getLatestTowing,
+		setStatusLoaded : setStatusLoaded,
+		setTowedStatus : setTowedStatus
 	}
 }])
 

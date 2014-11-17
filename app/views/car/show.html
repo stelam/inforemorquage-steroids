@@ -5,14 +5,15 @@
 		</div>
 
 		<div class="row status">
-			<div ng-show="!car.towed" ng-model="car.towed" class="card">
-			  <div class="item item-text-wrap">
-			    État : Non remorqué
-			  </div>
+			<div ng-hide="car.towed != false" ng-model="car.towed" class="card">
+				<div class="item item-text-wrap">
+					<i class="icon ion-ios7-checkmark"></i>
+					État : Non remorqué
+				</div>
 			</div>
 
 
-			<div class="card" ng-show="car.towed" ng-model="car.towed" >
+			<div class="card" ng-hide="car.towed != true" ng-model="car.towed" >
 				<div class="item item-divider">
 					 <i class="icon ion-alert-circled"></i> Voiture remorquée !
 				</div>
@@ -20,6 +21,17 @@
 					<button ng-click="showTowing()" class="button button-assertive icon-right ion-information-circled button-block">
 						Information sur le remorquage
 					</a>
+				</div>
+			</div>
+
+
+
+			<div class="card" ng-hide="car.towed != null" ng-model="car.towed" >
+				<div class="item item-divider">
+					 <i class="icon ion-help-circled"></i> État non disponible.
+				</div>
+				<div class="item item-text-wrap">
+					Veuillez vérifier votre connexion réseau.
 				</div>
 			</div>
 

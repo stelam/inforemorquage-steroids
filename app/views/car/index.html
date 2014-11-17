@@ -1,37 +1,42 @@
-
-<div ng-controller="IndexCtrl" class="list index-car">
-	<div ng-repeat="car in cars" ng-click="open(car.id)" class="animate-repeat" id="car-{{car.id}}">
-		<div class="item item-stable item-thumbnail-left item-icon-right"
-			ng-click="toggleCar(car)"
-			ng-class="{active: isCarShown(car)}">
-			<div class="square-img-80">
-				<img ng-src="{{car.imageURL}}">	          
-			</div>
-			<h2 class="animated fadeInDown delay-1">
-				{{car.name}}
-				<div class="status animated fadeInRight delay-2">
-					<div class="loading-icon-container">
-						<i ng-show="!car.statusLoaded" ng-model="car.statusLoaded" class="ion-loading-c icon loading"></i>
-					</div>
-					<div class="icon-container" ng-hide="!car.statusLoaded" ng-model="car.statusLoaded">
-						<i ng-hide="car.towed" ng-model="car.towed" class="ion-checkmark-circled icon ok"></i>
-					</div>
-					
-					<div class="icon-container" ng-hide="!car.statusLoaded" ng-model="car.statusLoaded">
-						<i ng-hide="!car.towed" ng-model="car.towed" class="ion-alert-circled icon towed"></i>
-					</div>
+<div ng-controller="IndexCtrl">
+	<div class="list index-car">
+		<div ng-repeat="car in cars" ng-click="open(car.id)" class="animate-repeat" id="car-{{car.id}}">
+			<div class="item item-stable item-thumbnail-left item-icon-right"
+				ng-click="toggleCar(car)"
+				ng-class="{active: isCarShown(car)}">
+				<div class="square-img-80">
+					<img ng-src="{{car.imageURL}}">	          
 				</div>
-			</h2> 
-			<p class="animated fadeInDown delay-2">{{car.registration}}</p>
-			<i class="icon ion-ios7-arrow-right"></i>
+				<h2 class="animated fadeInDown delay-1">
+					{{car.name}}
+					<div class="status animated fadeInRight delay-2">
+						<div class="loading-icon-container">
+							<i ng-show="!car.statusLoaded" ng-model="car.statusLoaded" class="ion-refreshing icon loading"></i>
+						</div>
+						<div class="icon-container" ng-hide="!car.statusLoaded" ng-model="car.statusLoaded">
+							<i ng-hide="car.towed != false" ng-model="car.towed" class="ion-checkmark-circled icon ok"></i>
+						</div>
+						
+						<div class="icon-container" ng-hide="!car.statusLoaded" ng-model="car.statusLoaded">
+							<i ng-hide="car.towed != true" ng-model="car.towed" class="ion-alert-circled icon towed"></i>
+						</div>
+
+						<div class="icon-container" ng-hide="!car.statusLoaded" ng-model="car.statusLoaded">
+							<i ng-hide="car.towed != null" ng-model="car.towed" class="ion-help-circled icon towed"></i>
+						</div>
+					</div>
+				</h2> 
+				<p class="animated fadeInDown delay-2">{{car.registration}}</p>
+				<i class="icon ion-ios7-arrow-right"></i>
 
 
+			</div>
 		</div>
 	</div>
-</div>
 
-<div class="padding" ng-controller="IndexCtrl">
-	<button ng-click="goAddNew()" class="add-new-button button button-block button-stable ion-plus-round">
-	  Ajouter un véhicule
-	</button>
+	<div class="padding" >
+		<button ng-click="goAddNew()" class="add-new-button button button-block button-stable ion-plus-round">
+		  Ajouter un véhicule
+		</button>
+	</div>
 </div>

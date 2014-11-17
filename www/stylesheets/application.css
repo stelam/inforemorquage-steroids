@@ -340,7 +340,7 @@ textarea.ng-valid.ng-dirty {
 .ng-hide {display: none !important;}
 
 
-.ng-hide-remove.ng-hide-remove-active, .ng-hide-remove {
+.ng-hide-remove.ng-hide-remove-active:not(.loading):not(.towed), .ng-hide-remove:not(.loading):not(.towed) {
 	transition: all .5s;
 	/*display: block!important;*/
     -webkit-animation-duration: 0.5s; 
@@ -400,6 +400,13 @@ textarea.ng-valid.ng-dirty {
 
 .new-message textarea {height: 190px;}
 
+
+.generate-cars-input {
+    border: 1px solid #ccc !important;
+    display: inline !important;
+    width: 35px !important;
+    text-align: center !important;
+}
 
 
 @keyframes blink {  
