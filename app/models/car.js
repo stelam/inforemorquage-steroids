@@ -310,7 +310,9 @@ module.factory('CarModel', ['localStorageService', 'TowingModel', '$q', 'Connect
 				deferred.resolve(cars);
 			})
 		}, function(error){
-			deferred.reject(error);
+			replaceExistingCar(cars, car).then(function(cars){
+				deferred.reject(error);
+			})
 		})
 
 		return deferred.promise;

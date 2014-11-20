@@ -62,18 +62,25 @@ carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarModel', 'ViewMana
     if (event.data.action == "refreshCarById"){
 
       var car = CarModel.getById(event.data.carId);
-
+      
 
       
       CarModel.syncCarsWithLocalStorage($scope.cars).then(function(cars){
         CarModel.updateCarTowingStatus($scope.cars, car).then(function(cars){
+          scrollToUpdatedCar();
 
-          // Scroll to newly refreshed car
-          var carElement = angular.element(document.getElementById("car-" + car.id));
-          $document.scrollToElementAnimated(carElement, 30, 1500);
-
+        }, function(error){
+          scrollToUpdatedCar();
+          
         })
       })
+
+      // Scroll to newly refreshed car
+      function scrollToUpdatedCar(){
+        var carElement = angular.element(document.getElementById("car-" + car.id));
+        $document.scrollToElementAnimated(carElement, 30, 1500);
+      }
+
     }
   }
   window.addEventListener("message", this.messageReceived);
