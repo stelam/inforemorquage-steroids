@@ -9,10 +9,9 @@ carApp.controller('NewCtrl', [
   '$filter', 
   'ViewManager', 
   '$cordovaDialogs', 
-  'Helpers', 
   '$cordovaToast', 
   'CameraManager', 
-  function (UIInitializer, $scope, CarModel, $filter, ViewManager, $cordovaDialogs, Helpers, $cordovaToast, CameraManager) {
+  function (UIInitializer, $scope, CarModel, $filter, ViewManager, $cordovaDialogs, $cordovaToast, CameraManager) {
     
     /* Réinitialiser le modèle voiture */
     $scope.car = CarModel.defaultCar();

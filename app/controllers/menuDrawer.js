@@ -11,7 +11,7 @@
 * @class angular_module.menuDrawerApp
 * @memberOf angular_module    
 */
-var menuDrawerApp = angular.module('menuDrawerApp', ['MenuDrawerModel', 'ngTouch', 'mainApp', 'steroidsBridge']);
+var menuDrawerApp = angular.module('menuDrawerApp', ['MenuDrawerModel', 'ngTouch', 'steroidsBridge']);
 
 
 

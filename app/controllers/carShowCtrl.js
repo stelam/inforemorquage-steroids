@@ -12,8 +12,7 @@ carApp.controller('ShowCtrl', [
   '$cordovaDialogs', 
   '$cordovaToast', 
   'CameraManager', 
-  'Helpers', 
-  function (UIInitializer, $scope, CarModel, $filter, ViewManager, $location, $cordovaDialogs, $cordovaToast, CameraManager, Helpers) {
+  function (UIInitializer, $scope, CarModel, $filter, ViewManager, $location, $cordovaDialogs, $cordovaToast, CameraManager) {
 
     /**
     * @description Event listener de l'événement 'willchange' sur steroids.layers.

@@ -6,7 +6,6 @@ var carApp = angular.module('carApp', [
   'CarModelApp', 
   'LocalStorageModule', 
   'ngTouch', 
-  'mainApp', 
   'steroidsBridge', 
   'ngCordova', 
   'ngAnimate', 

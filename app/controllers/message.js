@@ -5,7 +5,6 @@
 var messageApp = angular.module('messageApp', [
   'ngTouch', 
   'TowingModelApp', 
-  'mainApp', 
   'steroidsBridge', 
   'CarModelApp', 
   'ngCordova', 
@@ -24,8 +23,7 @@ messageApp.controller('MethodsCtrl', [
   'CarModel', 
   'TowingModel', 
   'UIInitializer', 
-  'Helpers', 
-  'ViewManager', function ($scope, $filter, CarModel, TowingModel, UIInitializer, Helpers, ViewManager) {
+  'ViewManager', function ($scope, $filter, CarModel, TowingModel, UIInitializer, ViewManager) {
 
     /**
     * @description Event listener de l'événement 'willchange' sur steroids.layers.
@@ -66,12 +64,11 @@ messageApp.controller('NewCtrl', [
   'CarModel', 
   'TowingModel', 
   'UIInitializer', 
-  'Helpers', 
   'ViewManager', 
   'ConnectionManager', 
   'MessageSender', 
   '$cordovaToast',
-  function ($scope, $filter, CarModel, TowingModel, UIInitializer, Helpers, ViewManager, ConnectionManager, MessageSender, $cordovaToast) {
+  function ($scope, $filter, CarModel, TowingModel, UIInitializer, ViewManager, ConnectionManager, MessageSender, $cordovaToast) {
 
     /* Pour DEV/TEST : Pré remplissage d'un message bidon */
     $scope.message = {

@@ -4,10 +4,8 @@
 */
 var configurationApp = angular.module('configurationApp', [
   'ConfigurationModel', 
-  'mainApp', 
   'steroidsBridge', 
   'ngTouch', 
-  'mainApp', 
   'ngRoute', 
   'ngCordova', 
   'CarModelApp'
