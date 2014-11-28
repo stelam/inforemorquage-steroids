@@ -81,7 +81,7 @@ carApp.controller('IndexCtrl', [
 
       /* Demande pour rafraîchir les véhicules sans rafraîchir leur statut */
       if (event.data.action == "refreshCars"){
-        CarModel.syncCarsWithLocalStorage($scope.cars).then(function(cars){/*Success*/});
+        CarModel.syncCarsFromLocalStorage($scope.cars).then(function(cars){/*Success*/});
       }
 
 
@@ -96,7 +96,7 @@ carApp.controller('IndexCtrl', [
         var car = CarModel.getById(event.data.carId);
         
         /* Mise à jour du statut */        
-        CarModel.syncCarsWithLocalStorage($scope.cars).then(function(cars){
+        CarModel.syncCarsFromLocalStorage($scope.cars).then(function(cars){
           CarModel.updateCarTowingStatus($scope.cars, car).then(function(cars){
             scrollToUpdatedCar();
           }, function(error){
