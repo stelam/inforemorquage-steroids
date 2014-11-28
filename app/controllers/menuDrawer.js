@@ -7,72 +7,66 @@
 */
 
 
+/**
+* @class angular_module.menuDrawerApp
+* @memberOf angular_module    
+*/
 var menuDrawerApp = angular.module('menuDrawerApp', ['MenuDrawerModel', 'ngTouch', 'mainApp', 'steroidsBridge']);
 
 
 
-// main scope controller
-menuDrawerApp.controller('menuDrawerCtrl', ['UIInitializer', '$scope', 'MenuDrawerRestangular', 'ViewManager', function (UIInitializer, $scope, MenuDrawerRestangular, ViewManager) {
+/**
+* @class angular_module.menuDrawerApp.IndexCtrl
+* @classdesc Contrôleur pour la liste des éléments du menu latéral
+*/
+menuDrawerApp.controller('IndexCtrl', [
+  'UIInitializer', 
+  '$scope', 
+  'MenuDrawerRestangular', 
+  'ViewManager', 
+  function (UIInitializer, $scope, MenuDrawerRestangular, ViewManager) {
 
+    // Helper function for opening new webviews
+    /**
+    * @name $scope.requestCreate
+    * @function
+    * @memberOf angular_module.carApp.NewCtrl
+    * @description Ouvrir une nouvelle webView à partir du menu latéral 
+    *   (on ne peut pas faire layers.push directement à partir d'un menu latéral dans steroids - 31 octobre 2014)
+    */  
+    $scope.open = function(viewLocation, viewId) {
+      steroids.drawers.hide({}, {
+        onSuccess: function(){
 
-}]);
+          /* Si la vue demandée est l'index des voitures, on demande la méthode popAll*/
+          if (viewId == "car/index"){
+            window.postMessage({
+              action: "popAll",
+              viewLocation: viewLocation,
+              viewId: viewId
+            });
+          }
 
+          /* S'il s'agit d'une vue autre*/
+          else {
+            window.postMessage({
+              action: "openFromDrawer",
+              viewLocation: viewLocation,
+              viewId: viewId
+            });
+          }
 
-
-// Index: http://localhost/views/menuDrawer/index.html
-menuDrawerApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'MenuDrawerRestangular', 'ViewManager', function (UIInitializer, $scope, MenuDrawerRestangular, ViewManager) {
-
-  // Helper function for opening new webviews
-  $scope.open = function(viewLocation, viewId) {
-
-    steroids.drawers.hide({
-      
-    }, {
-      onSuccess: function(){
-        if (viewId == "car/index"){
-          window.postMessage({
-            action: "popAll",
-            viewLocation: viewLocation,
-            viewId: viewId
-          });
         }
-        else {
-          window.postMessage({
-            action: "openFromDrawer",
-            viewLocation: viewLocation,
-            viewId: viewId
-          });
-        }
-      }
+      });
+    };
+
+    /* Fetch all objects from the local JSON (see app/models/menuDrawer.js) */
+    MenuDrawerRestangular.all('menuDrawer').getList().then( function(menuDrawers) {
+      $scope.menuDrawers = menuDrawers;
     });
-  };
 
-  // Fetch all objects from the local JSON (see app/models/menuDrawer.js)
-  MenuDrawerRestangular.all('menuDrawer').getList().then( function(menuDrawers) {
-    $scope.menuDrawers = menuDrawers;
-  });
+    /* Titre du menu latéral */
+    UIInitializer.initNavigationBar('Menu');
 
-  // Native navigation
-  UIInitializer.initNavigationBar('Menu');
-
-
-}]);
-
-
-// Show: http://localhost/views/menuDrawer/show.html?id=<id>
-
-menuDrawerApp.controller('ShowCtrl', function ($scope, $filter, MenuDrawerRestangular) {
-
-  // Fetch all objects from the local JSON (see app/models/menuDrawer.js)
-  MenuDrawerRestangular.all('menuDrawer').getList().then( function(menuDrawers) {
-    // Then select the one based on the view's id query parameter
-    $scope.menuDrawer = $filter('filter')(menuDrawers, {id: steroids.view.params['id']})[0];
-  });
-
-  // Native navigation
-  steroids.view.navigationBar.show("MenuDrawer: " + steroids.view.params.id );
-  steroids.view.setBackgroundColor("#FFFFFF");
-
-});
-
-
+  }
+]);
