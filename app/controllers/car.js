@@ -120,7 +120,9 @@ carApp.controller('IndexCtrl', [
       /* Si l'application vient de retrouver une connection internet
          on effectue une demande de rafraîchissement des véhicules */
       if (isOnline == true){
-        MessageSender.sendSavedMessages();
+        MessageSender.sendSavedMessages().then(function(){
+          $cordovaToast.showLongTop('Une plainte précédemment sauvegardée (hors ligne) a été envoyée.');
+        })
         window.postMessage({
           action: "refreshCarsAndStatuses",
           initialRefresh: true
