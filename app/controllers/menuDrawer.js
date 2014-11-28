@@ -3,7 +3,7 @@
 * parce que la gestion des événements UI n'est pas encore
 * disponible pour Android sous Appgyver :
 * https://github.com/AppGyver/steroids/issues/182
-*
+* (en date du 29 octobre 2014)
 */
 
 

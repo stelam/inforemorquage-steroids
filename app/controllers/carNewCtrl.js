@@ -2,8 +2,8 @@
 * @class angular_module.carApp.NewCtrl
 * @classdesc Contrôleur pour la vue de détails d'une voiture
 */
-carApp.controller('NewCtrl', ['
-  UIInitializer', 
+carApp.controller('NewCtrl', [
+  'UIInitializer', 
   '$scope', 
   'CarModel', 
   '$filter', 

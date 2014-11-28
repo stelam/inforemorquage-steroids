@@ -1,73 +1,98 @@
-var configurationApp = angular.module('configurationApp', ['ConfigurationModel', 'mainApp', 'steroidsBridge', 'ngTouch', 'mainApp', 'ngRoute', 'ngCordova', 'CarModelApp']);
+/**
+* @class angular_module.configurationApp
+* @memberOf angular_module    
+*/
+var configurationApp = angular.module('configurationApp', [
+  'ConfigurationModel', 
+  'mainApp', 
+  'steroidsBridge', 
+  'ngTouch', 
+  'mainApp', 
+  'ngRoute', 
+  'ngCordova', 
+  'CarModelApp'
+]);
 
 
-// Index: http://localhost/views/configuration/index.html
+/**
+* @class angular_module.configurationApp.IndexCtrl
+* @classdesc Contrôleur pour la liste des paramètres de config
+*/
+configurationApp.controller('IndexCtrl', [
+  '$scope', 
+  'ConfigurationRestangular', 
+  'UIInitializer', 
+  'CarModel', 
+  '$cordovaToast', 
+  'ViewManager', 
+  function ($scope, ConfigurationRestangular, UIInitializer, CarModel, $cordovaToast, ViewManager) {
 
-configurationApp.controller('IndexCtrl', ['$scope', 'ConfigurationRestangular', 'UIInitializer', 'CarModel', '$cordovaToast', 'ViewManager', function ($scope, ConfigurationRestangular, UIInitializer, CarModel, $cordovaToast, ViewManager) {
-
-  $scope.generateCars = {amount : 5}
-
-  // Helper function for opening new webviews
-  $scope.open = function(id) {
-    webView = new steroids.views.WebView("/views/configuration/show.html?id="+id);
-    steroids.layers.push(webView);
-  };
-
-  // Fetch all objects from the local JSON (see app/models/configuration.js)
-  ConfigurationRestangular.all('configuration').getList().then( function(configurations) {
-    $scope.configurations = configurations;
-  });
-
-  // Native navigation
-  this.messageReceived = function(event) {
-    if (event.data.action == "openFromDrawer" && event.data.viewId == "configuration"){
-      // Native navigation
-      UIInitializer.initNavigationBar('Configuration');
-      UIInitializer.initNavigationMenuButton();
-    }
-  }
-  window.addEventListener("message", this.messageReceived);
-
-
-  $scope.generateCars = function(){
-    CarModel.generateCars($scope.generateCars.amount);
-    $cordovaToast.showShortTop('Véhicules créés.');
-    window.postMessage({
-      action: "refreshCarsAndStatuses"
+    /* Fetch all objects from the local JSON (see app/models/configuration.js) */
+    ConfigurationRestangular.all('configuration').getList().then( function(configurations) {
+      $scope.configurations = configurations;
     });
 
-    steroids.layers.popAll();
-  }
+   /**
+    * @name this.messageReceived
+    * @function
+    * @memberOf angular_module.carApp.IndexCtrl
+    * @description Méthode appelée en callback lorsqu'un window.postMessage est reçu
+    * @param {Object} event
+    */
+    this.messageReceived = function(event) {
+      /* Si la vue est appelée à partir du menu latéral, on doit faire afficher ces éléments UI natifs manuellement */
+      if (event.data.action == "openFromDrawer" && event.data.viewId == "configuration"){
+        UIInitializer.initNavigationBar('Configuration');
+        UIInitializer.initNavigationMenuButton();
+      }
+    }
+
+    /* Écoute des messages (window.postMessage) */
+    window.addEventListener("message", this.messageReceived);
 
 
-
-  $scope.wipeCars = function(){
-    CarModel.empty().then(function(){
-      CarModel.unsetRequestedCar();
-      $cordovaToast.showShortTop('Tous les véhicules ont été supprimés.');
+    /**
+    * @name $scope.generateCars
+    * @function
+    * @memberOf angular_module.configurationApp
+    * @description Génère 5 voitures aléatoires
+    */  
+    $scope.generateCars = function(){
+      CarModel.generateCars(5);
+      $cordovaToast.showShortTop('Véhicules créés.');
       window.postMessage({
         action: "refreshCarsAndStatuses"
       });
-      window.postMessage({
-        action: "applyScope"
-      });
       steroids.layers.popAll();
-    })
+    }
+
+
+    /**
+    * @name $scope.wipeCars
+    * @function
+    * @memberOf angular_module.configurationApp
+    * @description Efface tous les véhicules présentement en localStorage
+    */  
+    $scope.wipeCars = function(){
+      CarModel.empty().then(function(){
+        /* On efface aussi la dernière voiture demandée */
+        CarModel.unsetRequestedCar();
+
+        $cordovaToast.showShortTop('Tous les véhicules ont été supprimés.');
+
+        /* Rafraîchissement de la liste de voitures */
+        window.postMessage({
+          action: "refreshCarsAndStatuses"
+        });
+
+        window.postMessage({
+          action: "applyScope"
+        });
+
+        /* Retour à l'index */
+        steroids.layers.popAll();
+      })
+    }
 
   }
-
-
-}]);
-
-
-// Show: http://localhost/views/configuration/show.html?id=<id>
-
-configurationApp.controller('ShowCtrl', function ($scope, $filter, ConfigurationRestangular) {
-
-  // Fetch all objects from the local JSON (see app/models/configuration.js)
-  ConfigurationRestangular.all('configuration').getList().then( function(configurations) {
-    // Then select the one based on the view's id query parameter
-    $scope.configuration = $filter('filter')(configurations, {id: steroids.view.params['id']})[0];
-  });
-
-});
+]);
