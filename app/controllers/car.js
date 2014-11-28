@@ -1,130 +1,161 @@
-var carApp = angular.module('carApp', ['CarModelApp', 'LocalStorageModule', 'ngTouch', 'mainApp', 'steroidsBridge', 'ngCordova', 'ngAnimate', 'messageApp', 'duScroll']);
+/**
+* @class angular_module.carApp
+* @memberOf angular_module    
+*/
+var carApp = angular.module('carApp', [
+  'CarModelApp', 
+  'LocalStorageModule', 
+  'ngTouch', 
+  'mainApp', 
+  'steroidsBridge', 
+  'ngCordova', 
+  'ngAnimate', 
+  'messageApp', 
+  'duScroll']
+);
 
 
-carApp.controller('IndexCtrl', ['UIInitializer', '$scope', 'CarModel', 'ViewManager', 'drawerOpenPageService', 'ConnectionManager', 'MessageSender', '$timeout', '$document', '$cordovaToast', function (UIInitializer, $scope, CarModel, ViewManager, drawerOpenPageService, ConnectionManager, MessageSender, $timeout, $document, $cordovaToast) {
+/**
+* @class angular_module.carApp.IndexCtrl
+* @classdesc Contrôleur pour la liste de voitures 
+*/
+carApp.controller('IndexCtrl', [
+  'UIInitializer', 
+  '$scope', 
+  'CarModel', 
+  'ViewManager', 
+  'drawerOpenPageService', 
+  'ConnectionManager', 
+  'MessageSender', 
+  '$timeout', 
+  '$document', 
+  '$cordovaToast', 
+  function (UIInitializer, $scope, CarModel, ViewManager, drawerOpenPageService, ConnectionManager, MessageSender, $timeout, $document, $cordovaToast) {
+    $scope.cars = CarModel.getAll();
+
+   /**
+    * @name $scope.open
+    * @function
+    * @memberOf angular_module.carApp.IndexCtrl
+    * @description Ouvre une webView pour une voiture donnée
+    * @param {int} carId
+    */
+    $scope.open = function(carId) {
+      CarModel.setRequestedCar(CarModel.getById(carId))
+      ViewManager.goToLoadedView("car/show");
+    };
 
 
-  // Helper function for opening new webviews
-  $scope.open = function(carId) {
-
-    CarModel.setRequestedCar(CarModel.getById(carId))
-    
-
-
-    ViewManager.goToLoadedView("car/show");
-
-  };
-
-
-  $scope.goAddNew = function(){
-    ViewManager.goToLoadedView("car/new");
-  }
-
-
-  // Load some cars
-  //$scope.cars = CarModel.initData();
-  $scope.cars = CarModel.getAll();
-
-  //CarModel.requestTowingStatuses($scope.cars).then(function(cars){
-    //console.log($scope.cars)
-  //});
-
-
-
-  this.messageReceived = function(event) {
-    if (event.data.action == "refreshCarsAndStatuses"){
-      if (event.data.initialRefresh != true)
-        $scope.cars = CarModel.getAll();
-
-      CarModel.requestTowingStatuses($scope.cars).then(function(cars){
-        //$scope.$apply();  
-
-      }, function(error){
-        $cordovaToast.showShortCenter('Impossible de se connecter au serveur. Veuillez réessayer plus tard.');
-        console.log($scope.cars);
-        // $scope.$apply();
-      });
-      
+   /**
+    * @name $scope.goAddNew
+    * @function
+    * @memberOf angular_module.carApp.IndexCtrl
+    * @description Ouvre la webview qui permet de créer une nouvelle voiture
+    */
+    $scope.goAddNew = function(){
+      ViewManager.goToLoadedView("car/new");
     }
 
-    if (event.data.action == "refreshCars"){
-      CarModel.syncCarsWithLocalStorage($scope.cars).then(function(cars){
-        //$scope.$apply();
-      });
-    }
+   /**
+    * @name this.messageReceived
+    * @function
+    * @memberOf angular_module.carApp.IndexCtrl
+    * @description Méthode appelée en callback lorsqu'un window.postMessage est reçu
+    * @param {Object} event
+    */
+    this.messageReceived = function(event) {
 
+      /* Demande pour rafraîchir les véhicules et leur statut */
+      if (event.data.action == "refreshCarsAndStatuses"){
 
-    if (event.data.action == "applyScope"){
-      $scope.$apply();
-    }
+        /* S'il ne s'agit pas de la première mise à jour, on refresh tous les véhicules  */
+        if (event.data.initialRefresh != true) {
+          $scope.cars = CarModel.getAll();
+        }
 
-
-    if (event.data.action == "refreshCarById"){
-
-      var car = CarModel.getById(event.data.carId);
-      
-
-      
-      CarModel.syncCarsWithLocalStorage($scope.cars).then(function(cars){
-        CarModel.updateCarTowingStatus($scope.cars, car).then(function(cars){
-          scrollToUpdatedCar();
-
-        }, function(error){
-          scrollToUpdatedCar();
-          
-        })
-      })
-
-      // Scroll to newly refreshed car
-      function scrollToUpdatedCar(){
-        var carElement = angular.element(document.getElementById("car-" + car.id));
-        $document.scrollToElementAnimated(carElement, 30, 1500);
+        /* Réactualisation des statuts */
+        CarModel.requestTowingStatuses($scope.cars).then(function(cars){/*Success*/}, function(error){
+          $cordovaToast.showShortCenter('Impossible de se connecter au serveur. Veuillez réessayer plus tard.');
+        });
       }
 
+
+      /* Demande pour rafraîchir les véhicules sans rafraîchir leur statut */
+      if (event.data.action == "refreshCars"){
+        CarModel.syncCarsWithLocalStorage($scope.cars).then(function(cars){/*Success*/});
+      }
+
+
+      /* Mise à jour manuelle du $scope d'Angular */
+      if (event.data.action == "applyScope"){
+        $scope.$apply();
+      }
+
+      /* Demande pour rafraîchir une voiture en particulier */
+      if (event.data.action == "refreshCarById"){
+
+        var car = CarModel.getById(event.data.carId);
+        
+        /* Mise à jour du statut */        
+        CarModel.syncCarsWithLocalStorage($scope.cars).then(function(cars){
+          CarModel.updateCarTowingStatus($scope.cars, car).then(function(cars){
+            scrollToUpdatedCar();
+          }, function(error){
+            scrollToUpdatedCar();
+          })
+        })
+
+        function scrollToUpdatedCar(){
+          var carElement = angular.element(document.getElementById("car-" + car.id));
+          $document.scrollToElementAnimated(carElement, 30, 1500);
+        }
+      }
     }
+
+    
+   /**
+    * @description Event listener de l'événement 'online' sur $rootScope. Voir {@link angular_module.steroidsBridge.ConnectionManager}
+    */
+    $scope.$on("online", function(event, isOnline){
+      /* Si l'application vient de retrouver une connection internet
+         on effectue une demande de rafraîchissement des véhicules */
+      if (isOnline == true){
+        MessageSender.sendSavedMessages();
+        window.postMessage({
+          action: "refreshCarsAndStatuses",
+          initialRefresh: true
+        });
+
+      /* Sinon, si l'application vient perdre la connection, on avise l'utilisateur */
+      } else {
+        $cordovaToast.showLongCenter('Impossible de se connecter au serveur. Veuillez vérifier votre connexion et réessayer.');
+        CarModel.setStatusLoaded($scope.cars, true)
+        CarModel.setTowedStatus($scope.cars, null);
+        $scope.$apply();
+      }
+    })
+
+
+    /* Lorsque la platforme Steroids est chargée, on fait des appels à son API pour initialiser certains éléments UI natifs */
+    steroids.on('ready', function() {
+      UIInitializer.initNavigationBar('Vos voitures');
+      UIInitializer.initNavigationMenuButton();
+      UIInitializer.initDrawers();
+    });
+
+    /* Écoute des messages (window.postMessage) */
+    window.addEventListener("message", this.messageReceived);
   }
-  window.addEventListener("message", this.messageReceived);
 
-
-  $scope.connectionManager = ConnectionManager;
-  //$scope.connectionManager.addEventListeners();
-  $scope.$on("online", function(event, isOnline){
-    // ConnectionManager.removeEventListeners();
-    if (isOnline == true){
-
-      MessageSender.sendSavedMessages();
-
-      window.postMessage({
-        action: "refreshCarsAndStatuses",
-        initialRefresh: true
-      });
-
-
-    } else {
-      $cordovaToast.showLongCenter('Impossible de se connecter au serveur. Veuillez vérifier votre connexion et réessayer.');
-      CarModel.setStatusLoaded($scope.cars, true)
-      CarModel.setTowedStatus($scope.cars, null);
-      $scope.$apply();
-    }
-  })
-
-
-  // Preload linked pages
-  //ViewManager.preloadViews(['car/show', 'car/new', 'configuration/index']);
-  
-  steroids.on('ready', function() {
-    // Native navigation
-    UIInitializer.initNavigationBar('Vos voitures');
-    UIInitializer.initNavigationMenuButton();
-    UIInitializer.initDrawers();
-  });
-
-}]);
+]);
 
 
 
 
-// Show: http://localhost/views/car/show.html?id=<id>
+/**
+* @class angular_module.carApp.IndexCtrl
+* @classdesc Contrôleur pour la liste de voitures 
+*/
 carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter', 'ViewManager', '$location', '$cordovaDialogs', '$cordovaToast', 'CameraManager', 'Helpers', function (UIInitializer, $scope, CarModel, $filter, ViewManager, $location, $cordovaDialogs, $cordovaToast, CameraManager, Helpers) {
 
   // Using steroids.layers.on to communicate between views
@@ -140,6 +171,7 @@ carApp.controller('ShowCtrl', ['UIInitializer', '$scope', 'CarModel', '$filter',
       $scope.cars = CarModel.getAll();
 
 
+      
       $scope.car.towed = CarModel.isTowed($scope.car);
       
       $scope.towing = $scope.car.towings[$scope.car.towings.length - 1];
