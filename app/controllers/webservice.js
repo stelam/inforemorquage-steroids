@@ -1,17 +1,36 @@
-
+/**
+* @class angular_module.webserviceApp
+* @memberOf angular_module    
+*
+* Module qui gère les appels au webservice
+*/
 angular.module('webserviceApp', ['ngTouch'])
 
+
+
+  /**
+  * @class angular_module.webserviceApp
+  * @classdesc Service pour créer les requêtes
+  */
   .factory("requestFactory", function($http, $q, $timeout){
     var factory = [];
 
+   /**
+    * @name getXml
+    * @function
+    * @memberOf angular_module.webserviceApp.requestFactory
+    * @description Effectue ûne requête http au service web et la réponse
+    * @param {string} url - Adresse où le service web est accessible
+    */
     factory.getXml = function(url){
       var deferred = $q.defer();
 
-      // On doit passer par un proxy CORS
-      // parce que Steroids effectue ses requêtes http à partir
-      // de localhost et non du protocole file://. Conséquemment,
-      // CORS est très strict.
+      /* On doit passer par un proxy CORS
+         parce que Steroids effectue ses requêtes http à partir
+         de localhost et non du protocole file://. Conséquemment,
+         CORS est très strict. */
       var corsProxyUrl = "www.corsproxy.com/";
+
 
       $timeout(function(){
         var xml;
@@ -22,7 +41,7 @@ angular.module('webserviceApp', ['ngTouch'])
         }).
 
         error(function(data, status, headers, config) {
-          // perhaps we should use interceptors
+          /* On pourrait utiliser les interceptors d'Angular */
           deferred.reject(status);
         });
 
@@ -32,6 +51,15 @@ angular.module('webserviceApp', ['ngTouch'])
       return deferred.promise;
     }
 
+
+
+   /**
+    * @name getJsonFromXml
+    * @function
+    * @memberOf angular_module.webserviceApp.requestFactory
+    * @description Effectue l'appel à un webservice et retourne la réponse XML en format json
+    * @param {string} url - Adresse où le service web est accessible
+    */
     factory.getJsonFromXml = function(url){
       var deferred = $q.defer();
 
@@ -49,8 +77,20 @@ angular.module('webserviceApp', ['ngTouch'])
     return factory;
   })
 
+
+  /**
+  * @class angular_module.webserviceApp
+  * @classdesc Service pour gérer les requêtes au webservice d'inforemorquage
+  */
   .service("inforemorquageWebService", function(requestFactory, $q){
 
+   /**
+    * @name getTowingJsonByRegistration
+    * @function
+    * @memberOf angular_module.webserviceApp.inforemorquageWebService
+    * @description Demande la requête au webservice d'inforemorquage
+    * @param {string} registration - Plaque d'immatriculation à vérifier (caractères alpha numériques seulement)
+    */
     this.getTowingJsonByRegistration = function(registration){
 
       var deferred = $q.defer();
