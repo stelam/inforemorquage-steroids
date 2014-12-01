@@ -8,35 +8,37 @@
 	};
 
 
+	/**
+	* @class angular_module.MessageModelApp
+	* @memberOf angular_module
+	* 
+	* Module contenant le modèle pour les éléments du menu latéral
+	*/
 	var module = angular.module('MessageModelApp', ['restangular', 'LocalStorageModule']);
 
-	module.factory('MessageRestangular', function(Restangular) {
-
-	  return Restangular.withConfig(function(RestangularConfigurer) {
-
-	    RestangularConfigurer.setBaseUrl('http://localhost/data');
-	    RestangularConfigurer.setRequestSuffix('.json');
-	    RestangularConfigurer.setRestangularFields({
-	      id: "message_id"
-	    });
-
-	  });
-
-	});
 
 
-
+	/**
+	* @class angular_module.MessageModelApp.MessageModel
+	* @classdesc Service pour le modèle des messages
+	*/
 	module.factory('MessageModel', ['localStorageService', '$q', function(localStorageService, $q){
 		var factory = [];
 
+
 		factory.getAll = function(){
-			//factory.empty();
 			var messages = localStorageService.get("messages");
 			if (!messages || messages == {}) {messages = []}
 			return messages;
 		}
 
-
+	   /**
+	    * @name add
+	    * @function
+	    * @memberOf angular_module.CarModelApp.MessageModel
+	    * @description Ajoute un message à la liste de messages (à être envoyés en-ligne)
+	    * @param {Object} message - Message à ajouter
+	    */
 		factory.add = function(message){
 			var deferred = $q.defer();
 			var messages = factory.getAll()
@@ -67,6 +69,12 @@
 			return index;
 		}
 
+	   /**
+	    * @name empty
+	    * @function
+	    * @memberOf angular_module.CarModelApp.MessageModel
+	    * @description Efface tous les messages du localStorage
+	    */
 		factory.empty = function(){
 			localStorageService.set("messages", []);
 		}

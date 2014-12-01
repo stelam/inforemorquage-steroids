@@ -7,9 +7,20 @@ if ( typeof angular == 'undefined' ) {
 	return;
 };
 
-
+/**
+* @class angular_module.MenuDrawerModel
+* @memberOf angular_module
+* 
+* Module contenant le modèle pour les éléments du menu latéral
+*/
 var module = angular.module('MenuDrawerModel', ['restangular']);
 
+
+/**
+* @class angular_module.CarModelApp.MenuDrawerModel
+* @classdesc Service RESTAngular pour les éléments du menu latéral
+* 	(généré par Steroids)
+*/
 module.factory('MenuDrawerRestangular', function(Restangular) {
 
   return Restangular.withConfig(function(RestangularConfigurer) {

@@ -7,9 +7,20 @@ if ( typeof angular == 'undefined' ) {
 	return;
 };
 
-
+/**
+* @class angular_module.ConfigurationModel
+* @memberOf angular_module
+* 
+* Module contenant le modèle pour les configs
+*/
 var module = angular.module('ConfigurationModel', ['restangular']);
 
+
+/**
+* @class angular_module.CarModelApp.ConfigurationModel
+* @classdesc Service RESTAngular pour les configs
+* 	(généré par Steroids)
+*/
 module.factory('ConfigurationRestangular', function(Restangular) {
 
   return Restangular.withConfig(function(RestangularConfigurer) {
